@@ -2,9 +2,12 @@
 #include "Scene.h"
 #include "GameObject.h"
 #include "ResourceMgr.h"
+#include "Framework.h"
+#include "InputMgr.h"
 
-Scene::Scene(SceneId id) : sceneId(id)
+Scene::Scene(SceneId id) : sceneId(id), window(FRAMEWORK.GetWindow())
 {
+	window.setMouseCursorVisible(false);
 }
 
 Scene::~Scene()
@@ -71,11 +74,30 @@ void Scene::SortGos()
 		});
 }
 
+sf::Vector2f Scene::ScreenToWorldPos(sf::Vector2f screenPos)
+{
+	return window.mapPixelToCoords((sf::Vector2i)screenPos, worldView);
+}
+
+sf::Vector2f Scene::ScreenToUiPos(sf::Vector2f screenPos)
+{
+	return window.mapPixelToCoords((sf::Vector2i)screenPos, uiView);
+}
+
+sf::Vector2f Scene::WorldPosToScreen(sf::Vector2f worldPos)
+{
+	return (sf::Vector2f)window.mapCoordsToPixel(worldPos, worldView);
+}
+
+sf::Vector2f Scene::UiPosToScreen(sf::Vector2f uiPos)
+{
+	return (sf::Vector2f)window.mapCoordsToPixel(uiPos, uiView);
+}
+
 
 void Scene::Enter()
 {
 	RESOURCE_MGR.Load(resources);
-
 	for (auto go : gameObjects)
 	{
 		go->Reset();
@@ -100,10 +122,27 @@ void Scene::Update(float dt)
 
 void Scene::Draw(sf::RenderWindow& window)
 {
+	// layer 100 บฮลอดย UI Layer
 	SortGos();
 
+	window.setView(worldView);
 	for (auto go : gameObjects)
 	{
+		if (go->sortLayer >= 100)
+			continue;
+
+		if (go->GetActive())
+		{
+			go->Draw(window);
+		}
+	}	
+	
+	window.setView(uiView);
+	for (auto go : gameObjects)
+	{
+		if (go->sortLayer < 100)
+			continue;
+
 		if (go->GetActive())
 		{
 			go->Draw(window);

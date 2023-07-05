@@ -57,6 +57,19 @@ void Utils::SetOrigin(sf::Transformable& obj, Origins origin, const sf::FloatRec
 	obj.setOrigin(originPos);
 }
 
+void Utils::SetOrigin(sf::VertexArray& vertex, Origins origin)
+{
+	// ¾È‰Î
+	sf::Vector2f originPos(vertex.getBounds().width, vertex.getBounds().height);
+	originPos.x *= ((int)origin % 3) * 0.5f;
+	originPos.y *= ((int)origin / 3) * 0.5f;
+	for (int i = 0; i < vertex.getVertexCount(); i++)
+	{
+		vertex[i].position -= originPos;
+	}
+}
+
+
 const sf::Vector2f Utils::Normalize(const sf::Vector2f& vector)
 {
 	float mag = Magnitude(vector);

@@ -17,6 +17,7 @@ public:
 	static void SetOrigin(sf::Text& text, Origins origin);
 	static void SetOrigin(sf::Shape& shape, Origins origin);
 	static void SetOrigin(sf::Transformable& obj, Origins origin, const sf::FloatRect& rect);
+	static void SetOrigin(sf::VertexArray& vertex, Origins origin);
 
 	static const sf::Vector2f Normalize(const sf::Vector2f& vector);
 	static float Distance(const sf::Vector2f& pos1, const sf::Vector2f& pos2);

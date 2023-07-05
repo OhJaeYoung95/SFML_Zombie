@@ -13,6 +13,11 @@ protected:
 	std::vector<std::tuple<ResourceTypes, std::string>> resources;
 	std::list<GameObject*> gameObjects; 
 
+	sf::View worldView;
+	sf::View uiView;
+
+	sf::RenderWindow& window;
+	
 public:
 	Scene(SceneId id = SceneId::None);
 	virtual ~Scene();
@@ -23,6 +28,11 @@ public:
 	GameObject* AddGo(GameObject* go);
 	void RemoveGo(GameObject* go);
 	void SortGos();
+
+	sf::Vector2f ScreenToWorldPos(sf::Vector2f screenPos);
+	sf::Vector2f ScreenToUiPos(sf::Vector2f screenPos);
+	sf::Vector2f WorldPosToScreen(sf::Vector2f worldPos);
+	sf::Vector2f UiPosToScreen(sf::Vector2f uiPos);
 
 	virtual void Init() = 0;
 	virtual void Release() {}

@@ -57,3 +57,8 @@ void SceneMgr::ChangeScene(SceneId id)
 	currentScene = scenes[(int)currentSceneId];
 	currentScene->Enter();
 }
+
+Scene* SceneMgr::GetCurrScene() const
+{
+	return currentScene;
+}
