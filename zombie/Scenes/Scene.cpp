@@ -7,13 +7,13 @@
 
 Scene::Scene(SceneId id) : sceneId(id), window(FRAMEWORK.GetWindow())
 {
-	window.setMouseCursorVisible(false);
+	//window.setMouseCursorVisible(false);
 }
 
-Scene::~Scene()
-{
-	Release();
-}
+//Scene::~Scene()
+//{
+//	//Release();
+//}
 
 GameObject* Scene::FindGo(const std::string& name)
 {
@@ -61,7 +61,7 @@ GameObject* Scene::AddGo(GameObject* go)
 
 void Scene::RemoveGo(GameObject* go)
 {
-	gameObjects.remove(go);
+	removeGameObjects.push_back(go);
 	//delete go;
 }
 
@@ -106,6 +106,12 @@ void Scene::Enter()
 
 void Scene::Exit()
 {
+	for (auto go : removeGameObjects)
+	{
+		gameObjects.remove(go);
+	}
+	removeGameObjects.clear();
+
 	RESOURCE_MGR.Unload(resources);
 }
 
@@ -117,7 +123,13 @@ void Scene::Update(float dt)
 		{
 			go->Update(dt);
 		}
+	}	
+	
+	for (auto go : removeGameObjects)
+	{
+		gameObjects.remove(go);
 	}
+	removeGameObjects.clear();
 }
 
 void Scene::Draw(sf::RenderWindow& window)

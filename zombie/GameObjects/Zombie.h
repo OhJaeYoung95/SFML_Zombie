@@ -1,5 +1,6 @@
 #pragma once
 #include "SpriteGo.h"
+#include "ObjectPool.h"
 
 class Player;
 
@@ -18,6 +19,7 @@ public:
 	static const float speedStats[3];
 	static const int damageStats[3];
 	static const int hpStats[3];
+	static const float attackRateStats[3];
 
 protected:
 	Types zombieType;
@@ -28,6 +30,8 @@ protected:
 	int maxHp = 0;
 	int damage = 0;
 	int hp = 0;
+	float attackRate = 0.f;		// ±³¼ö´Ô
+	float attackTimer = 0.f;
 
 	float damageTick = 0.f;
 	bool isHit = false;
@@ -35,6 +39,8 @@ protected:
 	Player* player = nullptr;
 
 public:
+	ObjectPool<Zombie>* pool;
+
 	Zombie(const std::string n = "");
 	virtual ~Zombie() override;
 

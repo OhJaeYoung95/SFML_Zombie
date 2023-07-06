@@ -2,6 +2,8 @@
 #include "Bullet.h"
 #include "Zombie.h"
 #include "SceneMgr.h"
+#include "SceneMgr.h"
+#include "Scene.h"
 
 Bullet::Bullet(const std::string textureId, const std::string n)
 	: SpriteGo(textureId, n)
@@ -12,9 +14,14 @@ Bullet::~Bullet()
 {
 }
 
-void Bullet::SetZombieList(std::list<Zombie*>* list)
+void Bullet::SetZombieList(const std::list<Zombie*>* list)
 {
 	zombies = list;
+}
+
+void Bullet::SetZombiePool(ObjectPool<Zombie> pool)
+{
+	//zombies = pool.GetUseList();
 }
 
 void Bullet::Fire(const sf::Vector2f& pos, const sf::Vector2f& dir, float speed)
@@ -55,8 +62,9 @@ void Bullet::Update(float dt)
 	range -= speed * dt;
 	if (range < 0)
 	{
-		//SCENE_MGR.
-		SetActive(false);
+		SCENE_MGR.GetCurrScene()->RemoveGo(this);
+		pool->Return(this);		// 풀로 회수
+		//SetActive(false);
 		return;
 	}
 
@@ -70,7 +78,10 @@ void Bullet::Update(float dt)
 			if (sprite.getGlobalBounds().intersects(zombie->sprite.getGlobalBounds()))
 			{
 				zombie->OnHitBullet(damage);
-				SetActive(false);
+
+				SCENE_MGR.GetCurrScene()->RemoveGo(this);
+				pool->Return(this);		// 풀로 회수
+				//SetActive(false);
 				break;
 			}
 		}

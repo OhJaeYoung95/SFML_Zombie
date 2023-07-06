@@ -69,6 +69,24 @@ void Utils::SetOrigin(sf::VertexArray& vertex, Origins origin)
 	}
 }
 
+float Utils::Clamp(float v, float min, float max)
+{
+	return std::max(min, std::min(max, v));
+	//if (v < min)
+	//	return min;
+	//if (v > max)
+	//	return max;
+	//return v;
+}
+
+sf::Vector2f Utils::Clamp(const sf::Vector2f& v, const sf::Vector2f& min, const sf::Vector2f& max)
+{
+	sf::Vector2f result;
+	result.x = Clamp(v.x, min.x, max.x);
+	result.y = Clamp(v.y, min.y, max.y);
+	return result;
+}
+
 
 const sf::Vector2f Utils::Normalize(const sf::Vector2f& vector)
 {

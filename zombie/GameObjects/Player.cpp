@@ -6,6 +6,7 @@
 #include "Bullet.h"
 #include "SceneDev1.h"
 #include "Framework.h"
+#include "Utils.h"
 
 Player::Player(const std::string textureId, const std::string n)
 	: SpriteGo(textureId, n)
@@ -17,11 +18,21 @@ void Player::Init()
 {
 	SpriteGo::Init();
 	SetOrigin(Origins::MC);
+
+	ObjectPool<Bullet>* ptr = &poolBullets;
+
+	poolBullets.OnCreate = [ptr](Bullet* bullet) {
+		bullet->textureId = "graphics/bullet.png";
+		bullet->pool = ptr;
+	};
+	poolBullets.Init();
 }
 
 void Player::Release()
 {
 	SpriteGo::Release();
+
+	poolBullets.Release();
 }
 
 void Player::Reset()
@@ -29,6 +40,14 @@ void Player::Reset()
 	SpriteGo::Reset();
 	sprite.setColor(sf::Color::White);
 	hp = maxHp;
+	isAlive = true;
+
+	for (auto bullet : poolBullets.GetUseList())
+	{
+		SCENE_MGR.GetCurrScene()->RemoveGo(bullet);
+	}
+
+	poolBullets.Clear();
 }
 
 void Player::Update(float dt)
@@ -48,16 +67,22 @@ void Player::Update(float dt)
 
 	// 이동
 	direction = { INPUT_MGR.GetAxisRaw(Axis::Horizontal), INPUT_MGR.GetAxisRaw(Axis::Vertical)};
-	position += direction * speed * dt;	// -2433, -29~-30, -80~80
-
+	position += direction * speed * dt;	// -2433, -29~-30, -80~80	
 	sprite.setPosition(position);
+
+	// 교수님 코드
+	if (!wallBounds.contains(position))
+	{
+		position = Utils::Clamp(position, wallBoundsLT, wallBoundsRB);
+	}
 
 	if (INPUT_MGR.GetMouseButtonDown(sf::Mouse::Left) && tick < 0.4f)
 	{
 		tick = 0.5f;
-		Bullet* bullet = new Bullet("graphics/bullet.png");
-		bullet->Init();
-		bullet->Reset();
+		Bullet* bullet = poolBullets.Get();
+		// Pool에서 Init()랑 Reset()을 해주니 생략
+		//bullet->Init();
+		//bullet->Reset();	
 		bullet->Fire(GetPosition(), look, 1000.f);
 
 		Scene* scene = SCENE_MGR.GetCurrScene();
@@ -77,6 +102,8 @@ void Player::Draw(sf::RenderWindow& window)
 
 void Player::HpDecrease(int damage)
 {
+	if (!isAlive)
+		return;
 	hp -= damage;
 	std::cout << hp << std::endl;
 	if (hp <= 0)
@@ -93,4 +120,35 @@ int Player::GetHp() const
 int Player::GetMaxHp() const
 {
 	return maxHp;
+}
+
+void Player::SetWallBounds(const sf::FloatRect& bounds)
+{
+	wallBounds = bounds;
+	wallBoundsLT = { wallBounds.left, wallBounds.top };
+	wallBoundsRB = wallBoundsLT + sf::Vector2f{wallBounds.width, wallBounds.height};
+}
+
+void Player::OnHitted(int damage)
+{
+	if (!isAlive)
+		return;
+	hp = std::max(hp - damage, 0);
+	if (hp == 0)
+	{
+		OnDie();
+	}
+}
+
+void Player::OnDie()
+{
+	isAlive = false;
+	std::cout << "Player Die" << std::endl;
+	Scene* scene = SCENE_MGR.GetCurrScene();
+	SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
+	if (sceneDev1 != nullptr)
+	{
+		sceneDev1->OnDiePlayer();
+	}
+
 }

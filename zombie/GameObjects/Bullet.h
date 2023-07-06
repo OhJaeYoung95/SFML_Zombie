@@ -1,7 +1,11 @@
 #pragma once
 #include "SpriteGo.h"
+#include "ObjectPool.h"
 
 class Zombie;
+
+//template<>
+//class ObjectPool<Bullet>;
 
 class Bullet : public SpriteGo
 {
@@ -11,13 +15,17 @@ protected:
 	float range = 2000.f;
 	int damage = 25;
 
-	std::list<Zombie*>* zombies;
+	const std::list<Zombie*>* zombies;
+
 
 public:
+	ObjectPool<Bullet>* pool;
+
 	Bullet(const std::string textureId = "", const std::string n = "");
 	virtual ~Bullet() override;
 
-	void SetZombieList(std::list<Zombie*>* list);
+	void SetZombieList(const std::list<Zombie*>* list);
+	void SetZombiePool(ObjectPool<Zombie> pool);
 	void Fire(const sf::Vector2f& pos, const sf::Vector2f& dir, float speed);
 
 	virtual void Init() override;

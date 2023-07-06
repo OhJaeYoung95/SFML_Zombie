@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameObjects\Blood.cpp" />
     <ClCompile Include="GameObjects\Bullet.cpp" />
     <ClCompile Include="Framework\Framework.cpp" />
     <ClCompile Include="Framework\InputMgr.cpp" />
@@ -174,8 +175,11 @@
     <ClCompile Include="Global\Variables.cpp" />
     <ClCompile Include="GameObjects\VertexArrayGo.cpp" />
     <ClCompile Include="GameObjects\Zombie.cpp" />
+    <ClCompile Include="GameObjects\TextGo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameObjects\Blood.h" />
+    <ClInclude Include="Framework\ObjectPool.h" />
     <ClInclude Include="GameObjects\Bullet.h" />
     <ClInclude Include="GameObjects\GameObject.h" />
     <ClInclude Include="Global\Defines.h" />
@@ -193,6 +197,7 @@
     <ClInclude Include="Global\Variables.h" />
     <ClInclude Include="GameObjects\VertexArrayGo.h" />
     <ClInclude Include="GameObjects\Zombie.h" />
+    <ClInclude Include="GameObjects\TextGo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

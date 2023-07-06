@@ -1,5 +1,8 @@
 #pragma once
 #include "SpriteGo.h"
+#include "ObjectPool.h"
+
+class Bullet;
 
 class Player : public SpriteGo
 {
@@ -11,6 +14,14 @@ protected:
 	int hp = 0;
 
 	float tick = 0.5f;
+
+	// ±³¼ö´Ô
+	sf::FloatRect wallBounds;
+	sf::Vector2f wallBoundsLT;
+	sf::Vector2f wallBoundsRB;
+
+
+	ObjectPool<Bullet> poolBullets;
 
 public:
 	Player(const std::string textureId = "", const std::string n = "");
@@ -25,5 +36,12 @@ public:
 	void HpDecrease(int damage);
 	int GetHp() const;
 	int GetMaxHp() const;
+
+	// ±³¼ö´Ô ÄÚµå
+	void SetWallBounds(const sf::FloatRect& bounds);
+
+	bool isAlive = false;
+	void OnHitted(int damage);
+	void OnDie();
 };
 

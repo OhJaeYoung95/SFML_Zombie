@@ -14,8 +14,9 @@ const std::string Zombie::textureIds[3] =
 };
 
 const float Zombie::speedStats[3] = { 40.f, 70.f, 20.f };
-const int Zombie::damageStats[3] = { 1, 5, 3 };
+const int Zombie::damageStats[3] = { 10, 5, 7 };
 const int Zombie::hpStats[3] = { 100, 75, 50 };
+const float Zombie::attackRateStats[3] = { 2.f, 0.5f, 1.f };
 
 
 
@@ -43,6 +44,7 @@ void Zombie::Reset()
 {
     SpriteGo::Reset();
     hp = maxHp;
+    attackTimer = attackRate;
 }
 
 void Zombie::Update(float dt)
@@ -74,14 +76,29 @@ void Zombie::Update(float dt)
     }
     
     // 데미지 입히기
-    damageTick += dt;
-    if (sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds())&& damageTick > 1.f)
+    //damageTick += dt;
+    //if (sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds())&& damageTick > 1.f)
+    //{
+    //    isHit = true;
+    //    damageTick = 0.f;
+    //    player->sprite.setColor(sf::Color::Red);
+    //    player->HpDecrease(damage);
+    //}
+
+    // 교수님코드
+
+    attackTimer += dt;
+    if (attackTimer > attackRate)
     {
-        isHit = true;
-        damageTick = 0.f;
-        player->sprite.setColor(sf::Color::Red);
-        player->HpDecrease(damage);
+        if (player->isAlive && sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds()))
+        {
+            attackTimer = 0.f;
+            // 플레이어 피격
+            player->OnHitted(damage);
+        }
     }
+
+
 
     if (damageTick > 1.0f && isHit)
     {
@@ -104,6 +121,7 @@ void Zombie::SetType(Types t)
     speed = speedStats[index];
     maxHp = hpStats[index];
     damage = damageStats[index];
+    attackRate = attackRateStats[index];
 }
 
 Zombie::Types Zombie::GetType() const

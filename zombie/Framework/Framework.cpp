@@ -2,6 +2,7 @@
 #include "Framework.h"
 #include "InputMgr.h"
 #include "SceneMgr.h"
+#include "Scene.h"
 
 Framework::Framework(int w, int h, const std::string& t)
     : screenWidth(w), screenHeight(h), title(t)
@@ -35,6 +36,18 @@ void Framework::Run()
     Init(screenWidth, screenHeight, title);
     clock.restart();
 
+    // 커서 이미지 변경
+    //sf::Image cursorImg;
+    //cursorImg.loadFromFile("graphics/crosshair.png");
+
+    //sf::Cursor cursor;
+    //if (cursor.loadFromPixels(cursorImg.getPixelsPtr(), cursorImg.getSize(),
+    //    { cursorImg.getSize().x / 2,cursorImg.getSize().y / 2 }))
+    //{
+    //    window.setMouseCursor(cursor);
+    //}
+
+
     while (window.isOpen())
     {
         sf::Time deltaTime = clock.restart();
@@ -45,19 +58,30 @@ void Framework::Run()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            switch(event.type)
+            {
+            case sf::Event::Closed:
+                SCENE_MGR.GetCurrScene()->Exit();
                 window.close();
+            case sf::Event::GainedFocus:
+                //window.setMouseCursor(cursor);
+                break;
+            }
+            //if (event.type == sf::Event::Closed)
+            //    window.close();
 
             INPUT_MGR.Update(event);
         }
 
-        Update(dt);
+        if (window.isOpen())
+        {
+            Update(dt);
 
-        window.clear();
-        Draw();
-        window.display();
+            window.clear();
+            Draw();
+            window.display();
+        }
     }
-
     Release();
 }
 

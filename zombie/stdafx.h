@@ -8,7 +8,8 @@
 #include <map>
 #include <random>
 #include <tuple>
-//#include <math.h>
+#include <functional>
+#include <sstream>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>

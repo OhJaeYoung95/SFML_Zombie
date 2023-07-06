@@ -19,6 +19,10 @@ public:
 	static void SetOrigin(sf::Transformable& obj, Origins origin, const sf::FloatRect& rect);
 	static void SetOrigin(sf::VertexArray& vertex, Origins origin);
 
+	//static int Clamp(int v, int min, int max);
+	static float Clamp(float v, float min, float max);
+	static sf::Vector2f Clamp(const sf::Vector2f& v, const sf::Vector2f& min, const sf::Vector2f& max);
+
 	static const sf::Vector2f Normalize(const sf::Vector2f& vector);
 	static float Distance(const sf::Vector2f& pos1, const sf::Vector2f& pos2);
 	static float Magnitude(const sf::Vector2f& vector2);
