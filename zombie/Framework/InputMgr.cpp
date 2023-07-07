@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "InputMgr.h"
 #include "Framework.h"
+#include "Utils.h"
 
 InputMgr::InputMgr()
 {
@@ -11,6 +12,7 @@ InputMgr::InputMgr()
 		infoH.positives.push_back((int)sf::Keyboard::Key::Right);
 		infoH.negatives.push_back((int)sf::Keyboard::Key::A);
 		infoH.negatives.push_back((int)sf::Keyboard::Key::Left);
+		infoH.sensi = 3.0f;
 		axisInfoMap.insert({ infoH.axis , infoH });
 	}
 
@@ -21,17 +23,36 @@ InputMgr::InputMgr()
 		infoV.positives.push_back((int)sf::Keyboard::Key::Down);
 		infoV.negatives.push_back((int)sf::Keyboard::Key::W);
 		infoV.negatives.push_back((int)sf::Keyboard::Key::Up);
+		infoV.sensi = 3.0f;
 		axisInfoMap.insert({ infoV.axis , infoV });
 	}
 }
 
-void InputMgr::Clear()
+void InputMgr::Update(float dt)
 {
 	downList.clear();
 	upList.clear();
+
+	for (auto& it : axisInfoMap)
+	{
+		auto& axisInfo = it.second;
+		float raw = GetAxisRaw(axisInfo.axis);
+		if (raw == 0.f && axisInfo.value != 0.f)
+		{
+			raw = axisInfo.value > 0.f ? -1.f : 1.f;
+		}
+
+		float diff = axisInfo.sensi * dt;
+		axisInfo.value = Utils::Clamp(axisInfo.value + raw * diff, -1.0f, 1.0f);
+
+		if (abs(axisInfo.value) < diff * 0.5f)
+		{
+			axisInfo.value = 0.f;
+		}
+	}
 }
 
-void InputMgr::Update(const sf::Event& ev)
+void InputMgr::UpdateEvent(const sf::Event& ev)
 {
 	switch (ev.type)
 	{
@@ -109,7 +130,10 @@ bool InputMgr::GetMouseButtonUp(sf::Mouse::Button button)
 
 float InputMgr::GetAxis(Axis axis)
 {
-	return 0.0f;
+	const auto& it = axisInfoMap.find(axis);
+	if (it == axisInfoMap.end())
+		return 0.0f;
+	return it->second.value;
 }
 
 float InputMgr::GetAxisRaw(Axis axis)

@@ -79,12 +79,42 @@ float Utils::Clamp(float v, float min, float max)
 	//return v;
 }
 
-sf::Vector2f Utils::Clamp(const sf::Vector2f& v, const sf::Vector2f& min, const sf::Vector2f& max)
+sf::Vector2f& Utils::Clamp(const sf::Vector2f& v, const sf::Vector2f& min, const sf::Vector2f& max)
 {
 	sf::Vector2f result;
 	result.x = Clamp(v.x, min.x, max.x);
 	result.y = Clamp(v.y, min.y, max.y);
 	return result;
+}
+
+float Utils::Lerp(float a, float b, float t, bool clamping)
+{
+	float v = a + (b - a) * t;
+	if (clamping)
+	{
+		v = Utils::Clamp(v, std::min(a,b), std::max(a,b));
+	}
+	return v;
+}
+
+sf::Vector2f Utils::Lerp(const sf::Vector2f& a, const sf::Vector2f& b, float t, bool clamping)
+{
+	if (clamping)
+	{
+		t = Utils::Clamp(t, 0.f, 1.f);
+	}
+	return a + Utils::Normalize(b - a) * (Utils::Distance(a, b) * t);
+}
+
+sf::Color Utils::Lerp(const sf::Color& a, const sf::Color& b, float t, bool clamping)
+{
+	sf::Color v;
+	v.r = Lerp(a.r, b.r, t, clamping);
+	v.g = Lerp(a.g, b.g, t, clamping);
+	v.b = Lerp(a.b, b.b, t, clamping);
+	v.a = Lerp(a.a, b.a, t, clamping);
+
+	return v;
 }
 
 

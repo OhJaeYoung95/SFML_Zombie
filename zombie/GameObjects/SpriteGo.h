@@ -9,7 +9,7 @@ public:
 	sf::Sprite sprite;
 	sf::RectangleShape rect;
 
-	SpriteGo(const std::string textureId = "", const std::string n = "");
+	SpriteGo(const std::string& textureId = "", const std::string& n = "");
 	virtual ~SpriteGo() override;
 
 	virtual void SetPosition(const sf::Vector2f& p);

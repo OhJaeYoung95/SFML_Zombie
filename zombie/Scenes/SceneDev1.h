@@ -8,10 +8,15 @@ class VertexArrayGo;
 class SpriteGo;
 class TextGo;
 class Blood;
+class SpriteEffect;
 
 class SceneDev1 : public Scene
 {
 protected:
+	ObjectPool<Zombie> poolZombies;
+	ObjectPool<Blood> poolBloods;
+	ObjectPool<SpriteEffect> bloodEffectPool;
+
 	Player* player;
 	//std::list<Zombie*> zombiePool;		// 비활성화 좀비
 	//std::list<Zombie*> zombies;			// 활성화 좀비
@@ -27,6 +32,9 @@ protected:
 	SpriteGo* mouseCursor;
 	float tick = 0.5f;
 
+	SpriteGo* ammoIcon;
+	TextGo* textAmmo;
+
 	TextGo* textScore;
 	TextGo* textHiScore;
 	TextGo* textZombieCount;
@@ -36,11 +44,11 @@ protected:
 	int hiScore = 0;
 
 	int zombieCount = 0;
-	int wave = 0;
+	int wave = 1;
 
-	int reloadAmmo = 0;		// 장전에 필요한 탄약
-	int currentAmmo = 0;	// 현재 장전된 탄약
-	int ownedAmmo = 0;		// 총 지니고 있는 탄약
+	int reloadAmmo = 30;		// 장전에 필요한 탄약
+	int currentAmmo = 30;	// 현재 장전된 탄약
+	int ownedAmmo = 50;		// 총 지니고 있는 탄약
 
 	SpriteGo* playerHp;
 	SpriteGo* playerMaxHp;
@@ -56,8 +64,6 @@ protected:
 	//float maxClampY;
 	//float minClampY;
 
-	ObjectPool<Zombie> poolZombies;
-	ObjectPool<Blood> poolBloods;
 
 public:
 
@@ -77,12 +83,33 @@ public:
 
 	void CreateZombies(int count);
 	void SpawnZombies(int count, sf::Vector2f center, float radius);
+
+	template<typename T>
+	void ClearObjectPool(ObjectPool<T>& pool);
+
 	void ClearZombies();
 	void ClearBloods();
 
 	void OnDieZombie(Zombie* zombie);
 	void OnDiePlayer();
 
+	// 탄창
+	int GetReloadAmmo() const;
+	int GetCurrentAmmo() const;
+	int GetOwnedAmmo() const;
+
+	void SetCurrentAmmo(int ammo);
+	void SetOwnedAmmo(int ammo);
+
 	const std::list<Zombie*>* GetZombieList() const;
 };
 
+template<typename T>
+inline void SceneDev1::ClearObjectPool(ObjectPool<T>& pool)
+{
+	for (auto obj : pool.GetUseList())
+	{
+		RemoveGo(obj);
+	}
+	pool.Clear();
+}

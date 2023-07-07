@@ -21,7 +21,11 @@ public:
 
 	//static int Clamp(int v, int min, int max);
 	static float Clamp(float v, float min, float max);
-	static sf::Vector2f Clamp(const sf::Vector2f& v, const sf::Vector2f& min, const sf::Vector2f& max);
+	static sf::Vector2f& Clamp(const sf::Vector2f& v, const sf::Vector2f& min, const sf::Vector2f& max);
+
+	static float Lerp(float a, float b, float t, bool clamping = true);
+	static sf::Vector2f Lerp(const sf::Vector2f& a, const sf::Vector2f& b, float t, bool clamping = true);
+	static sf::Color Lerp(const sf::Color& a, const sf::Color& b, float t, bool clamping = true);
 
 	static const sf::Vector2f Normalize(const sf::Vector2f& vector);
 	static float Distance(const sf::Vector2f& pos1, const sf::Vector2f& pos2);

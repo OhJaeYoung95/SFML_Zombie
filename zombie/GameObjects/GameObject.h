@@ -14,7 +14,7 @@ public:
 	int sortLayer = 0;
 	int sortOrder = 0;
 
-	GameObject(const std::string n = "");
+	GameObject(const std::string& n = "");
 	virtual ~GameObject();
 
 	bool GetActive() const;

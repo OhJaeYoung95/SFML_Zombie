@@ -17,7 +17,6 @@ protected:
 
 	const std::list<Zombie*>* zombies;
 
-
 public:
 	ObjectPool<Bullet>* pool;
 

@@ -13,6 +13,9 @@ struct AxisInfo
 	Axis axis;
 	std::list<int> positives;
 	std::list<int> negatives;
+
+	float sensi = 3.f;	// 값이 선형되는 속도
+	float value = 0.f;
 };
 
 class InputMgr : public Singleton<InputMgr>
@@ -33,8 +36,8 @@ protected:
 
 
 public:
-	void Clear();
-	void Update(const sf::Event& ev);
+	void Update(float dt);
+	void UpdateEvent(const sf::Event& ev);
 
 	// Keyboard
 	bool GetKeyDown(sf::Keyboard::Key key);

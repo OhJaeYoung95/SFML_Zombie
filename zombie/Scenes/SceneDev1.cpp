@@ -10,6 +10,7 @@
 #include "Zombie.h"
 #include "TextGo.h"
 #include "Blood.h"
+#include "SpriteEffect.h"
 
 SceneDev1::SceneDev1() : Scene(SceneId::Dev1), player(nullptr)
 {
@@ -25,6 +26,7 @@ SceneDev1::SceneDev1() : Scene(SceneId::Dev1), player(nullptr)
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/bullet.png"));
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/crosshair.png"));
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/blood.png"));
+	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/ammo_icon.png"));
 
 	window.setMouseCursorVisible(false);
 }
@@ -38,10 +40,14 @@ void SceneDev1::Init()
 {
 	Release();
 	score = 0;
-	wave = 0;
+	wave = 1;
 	zombieCount = 0;
 	spawnRate = 1.5f;
-	spawnTimer = spawnRate;
+	spawnTimer = 0;
+
+	reloadAmmo = 30;
+	currentAmmo = 30;
+	ownedAmmo = 100;
 
 	sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
 	sf::Vector2f centerPos = windowSize * 0.5f;
@@ -51,7 +57,7 @@ void SceneDev1::Init()
 	uiView.setCenter(centerPos);
 
 	// UI
-
+	textAmmo = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Ammo"));
 	textScore = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Score"));
 	textHiScore = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "HighScore"));
 	textZombieCount = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "ZombieCount"));
@@ -65,6 +71,8 @@ void SceneDev1::Init()
 	sf::Vector2f tileTexSize = { 50.f, 50.f };
 
 	player = (Player*)AddGo(new Player("graphics/player.png", "Player"));
+
+	ammoIcon = (SpriteGo*)AddGo(new SpriteGo("graphics/ammo_icon.png", "AmmoIcon"));
 
 	mouseCursor = (SpriteGo*)AddGo(new SpriteGo("graphics/crosshair.png", "CrossHair"));
 	playerHp = (SpriteGo*)AddGo(new SpriteGo());
@@ -88,17 +96,29 @@ void SceneDev1::Init()
 		//zombie->pool = ptr;
 	};
 
-	ObjectPool<Blood>* ptr = &poolBloods;
-	poolBloods.OnCreate = [this, ptr](Blood* blood) {
+	//ObjectPool<Blood>* ptr = &poolBloods;
+	poolBloods.OnCreate = [this/*, ptr*/](Blood* blood) {
 		blood->textureId = "graphics/blood.png";
 		blood->sortLayer = 1;
-		blood->pool = ptr;
+		//blood->pool = ptr;
+		blood->pool = &poolBloods;
 		//poolBloods.GetUseList() = blood->pool;
 	};
 
 	// 풀 Init
 	poolZombies.Init();
 	poolBloods.Init();
+
+	bloodEffectPool.OnCreate = [this](SpriteEffect* effect) {
+		effect->textureId = "graphics/blood.png";
+		effect->SetDuration(3.f);
+		effect->SetPool(&bloodEffectPool);
+		effect->sortLayer = 0;
+		effect->sortOrder = -1;
+
+	};
+
+	bloodEffectPool.Init();
 
 	// 여기 기준 위 아래 순서 생각
 
@@ -125,6 +145,12 @@ void SceneDev1::Init()
 	mouseCursor->SetOrigin(Origins::MC);
 	mouseCursor->sortLayer = 103;
 
+	ammoIcon->SetPosition(sf::Vector2f(10.f, FRAMEWORK.GetWindowSize().y - 10.f));
+	ammoIcon->SetOrigin(Origins::BL);
+	ammoIcon->sortLayer = 102;
+
+
+
 	playerHp->rect.setSize(sf::Vector2f(300.f, 40.f));
 	playerHp->rect.setFillColor(sf::Color::Red);
 	playerHp->SetOrigin(Origins::BC);
@@ -137,6 +163,15 @@ void SceneDev1::Init()
 	playerMaxHp->SetOrigin(Origins::BC);
 	playerMaxHp->sortLayer = 102;
 	playerMaxHp->sortOrder = 0;
+
+	textAmmo->SetPosition(sf::Vector2f(140.f, FRAMEWORK.GetWindowSize().y - 10.f));
+	textAmmo->text.setCharacterSize(50);
+	textAmmo->text.setFillColor(sf::Color::White);
+	textAmmo->text.setOutlineThickness(5);
+	textAmmo->text.setOutlineColor(sf::Color::Black);
+	textAmmo->text.setString("AMMO: ");
+	textAmmo->SetOrigin(Origins::BL);
+	textAmmo->sortLayer = 102;
 
 	textScore->SetPosition(sf::Vector2f(30.f, 10.f));
 	textScore->text.setCharacterSize(50);
@@ -187,6 +222,7 @@ void SceneDev1::Init()
 void SceneDev1::Release()
 {
 	poolZombies.Release();
+	bloodEffectPool.Release();
 	//poolBloods.Release();
 
 	for (auto go : gameObjects)
@@ -201,8 +237,12 @@ void SceneDev1::Enter()
 	Scene::Enter();
 	hiScore = hiScore < score ? score : hiScore;
 	score = 0;
-	wave = 0;
+	wave = 1;
 	zombieCount = 0;
+
+	reloadAmmo = 30;
+	currentAmmo = 30;
+	ownedAmmo = 100;
 
 	spawnTimer = spawnRate;
 
@@ -233,6 +273,10 @@ void SceneDev1::Enter()
 
 void SceneDev1::Exit()
 {
+	ClearObjectPool(poolZombies);
+	//ClearObjectPool(poolBloods);
+	ClearObjectPool(bloodEffectPool);
+
 	ClearZombies();
 	ClearBloods();
 	player->Reset();
@@ -243,9 +287,8 @@ void SceneDev1::Update(float dt)
 {
 	Scene::Update(dt);
 	tick -= dt;
-	spawnTimer -= dt;
 
-	std::cout << spawnTimer << std::endl;
+	//std::cout << spawnTimer << std::endl;
 
 	sf::Vector2f mousePos = SCENE_MGR.GetCurrScene()->ScreenToUiPos(INPUT_MGR.GetMousePos());
 	mouseCursor->SetPosition(mousePos);
@@ -309,24 +352,30 @@ void SceneDev1::Update(float dt)
 		SCENE_MGR.ChangeScene(sceneId);
 		return;
 	}
-	if (zombieCount == 0)
+
+	// 스폰 타이머 계산을 앞으로 하면 안된다.. ??
+	if (zombieCount == 0 && spawnTimer < 0)
 	{
-		spawnTimer = spawnRate;
 		wave++;
+		spawnTimer = spawnRate;
 	}
+	spawnTimer -= dt;
 
 	if (zombieCount == 0)
 	{
 		switch (wave)
 		{
 		case 1:
-			SpawnZombies(wave * 10, player->GetPosition(), 500.f);
+			if(spawnTimer < 0)
+				SpawnZombies(wave * 10, player->GetPosition(), 500.f);
 			break;
 		case 2:
-			SpawnZombies(wave * 10, player->GetPosition(), 500.f);
+			if (spawnTimer < 0)
+				SpawnZombies(wave * 10, player->GetPosition(), 500.f);
 			break;
 		case 3:
-			SpawnZombies(wave * 10, player->GetPosition(), 500.f);
+			if (spawnTimer < 0)
+				SpawnZombies(wave * 10, player->GetPosition(), 500.f);
 			break;
 		}
 	}
@@ -339,6 +388,10 @@ void SceneDev1::Update(float dt)
 		ClearZombies();
 	}
 	// UI
+	std::stringstream ammoS;
+	ammoS << currentAmmo << "/" << ownedAmmo;
+	textAmmo->text.setString(ammoS.str());
+
 	std::stringstream scoreS;
 	scoreS << "SCORE: " << score;
 	textScore->text.setString(scoreS.str());
@@ -487,6 +540,14 @@ void SceneDev1::ClearBloods()
 
 void SceneDev1::OnDieZombie(Zombie* zombie)
 {
+
+	//Blood* blood = poolBloods.Get();
+	//blood->SetPosition(zombie->GetPosition());
+	//AddGo(blood);
+	SpriteEffect* blood = bloodEffectPool.Get();
+	blood->SetPosition(zombie->GetPosition());
+	AddGo(blood);
+
 	//zombies.remove(zombie);
 	//zombie->SetActive(false);
 	//zombiePool.push_back(zombie);
@@ -495,10 +556,34 @@ void SceneDev1::OnDieZombie(Zombie* zombie)
 	score += 10;
 
 	zombieCount--;
-	Blood* blood = poolBloods.Get();
-	blood->SetPosition(zombie->GetPosition());
-	AddGo(blood);
+
 }
+
+int SceneDev1::GetReloadAmmo() const
+{
+	return reloadAmmo;
+}
+
+int SceneDev1::GetCurrentAmmo() const
+{
+	return currentAmmo;
+}
+
+int SceneDev1::GetOwnedAmmo() const
+{
+	return ownedAmmo;
+}
+
+void SceneDev1::SetCurrentAmmo(int ammo)
+{
+	currentAmmo += ammo;
+}
+
+void SceneDev1::SetOwnedAmmo(int ammo)
+{
+	ownedAmmo -= ammo;
+}
+
 
 const std::list<Zombie*>* SceneDev1::GetZombieList() const
 {

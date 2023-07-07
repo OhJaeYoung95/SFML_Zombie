@@ -33,8 +33,13 @@ void Blood::Reset()
 void Blood::Update(float dt)
 {
 	SpriteGo::Update(dt);
-
 	removeTimer -= dt;
+
+	if (pool->GetUseList().empty())
+	{
+		pool->Init();
+	}
+
 	if (removeTimer < 0)
 	{
 		if (!pool->GetUseList().empty())
@@ -43,6 +48,7 @@ void Blood::Update(float dt)
 			pool->Return(this);		// 풀로 회수
 			return;
 		}
+
 	}
 }
 

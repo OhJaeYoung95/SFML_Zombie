@@ -39,8 +39,9 @@ void Player::Reset()
 {
 	SpriteGo::Reset();
 	sprite.setColor(sf::Color::White);
-	hp = maxHp;
+
 	isAlive = true;
+	hp = maxHp;
 
 	for (auto bullet : poolBullets.GetUseList())
 	{
@@ -66,7 +67,15 @@ void Player::Update(float dt)
 	sprite.setRotation(Utils::Angle(look));
 
 	// 이동
-	direction = { INPUT_MGR.GetAxisRaw(Axis::Horizontal), INPUT_MGR.GetAxisRaw(Axis::Vertical)};
+	direction = { INPUT_MGR.GetAxis(Axis::Horizontal), INPUT_MGR.GetAxis(Axis::Vertical)};
+
+	float magnitude = Utils::Magnitude(direction);
+	if (magnitude > 1.f)
+	{
+		direction /= magnitude;
+	}
+
+	std::cout << direction.x << std::endl;
 	position += direction * speed * dt;	// -2433, -29~-30, -80~80	
 	sprite.setPosition(position);
 
@@ -75,22 +84,31 @@ void Player::Update(float dt)
 	{
 		position = Utils::Clamp(position, wallBoundsLT, wallBoundsRB);
 	}
+	Scene* scene = SCENE_MGR.GetCurrScene();
+	SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
 
-	if (INPUT_MGR.GetMouseButtonDown(sf::Mouse::Left) && tick < 0.4f)
+	if (INPUT_MGR.GetMouseButtonDown(sf::Mouse::Left) && tick < 0.4f && sceneDev1->GetCurrentAmmo() > 0)
 	{
 		tick = 0.5f;
 		Bullet* bullet = poolBullets.Get();
 		// Pool에서 Init()랑 Reset()을 해주니 생략
 		//bullet->Init();
-		//bullet->Reset();	
+		//bullet->Reset();
 		bullet->Fire(GetPosition(), look, 1000.f);
-
-		Scene* scene = SCENE_MGR.GetCurrScene();
-		SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
 		if (sceneDev1 != nullptr)
 		{
 			bullet->SetZombieList(sceneDev1->GetZombieList());
 			sceneDev1->AddGo(bullet);
+		}
+		sceneDev1->SetCurrentAmmo(-1);
+	}
+
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::R))
+	{
+		if (sceneDev1 != nullptr)
+		{
+			sceneDev1->SetCurrentAmmo(sceneDev1->GetReloadAmmo());
+			sceneDev1->SetOwnedAmmo(sceneDev1->GetReloadAmmo());
 		}
 	}
 }
@@ -105,7 +123,7 @@ void Player::HpDecrease(int damage)
 	if (!isAlive)
 		return;
 	hp -= damage;
-	std::cout << hp << std::endl;
+	//std::cout << hp << std::endl;
 	if (hp <= 0)
 	{
 		//Reset();
@@ -143,7 +161,7 @@ void Player::OnHitted(int damage)
 void Player::OnDie()
 {
 	isAlive = false;
-	std::cout << "Player Die" << std::endl;
+	//std::cout << "Player Die" << std::endl;
 	Scene* scene = SCENE_MGR.GetCurrScene();
 	SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
 	if (sceneDev1 != nullptr)

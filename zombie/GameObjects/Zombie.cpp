@@ -76,28 +76,30 @@ void Zombie::Update(float dt)
     }
     
     // 데미지 입히기
-    //damageTick += dt;
-    //if (sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds())&& damageTick > 1.f)
-    //{
-    //    isHit = true;
-    //    damageTick = 0.f;
-    //    player->sprite.setColor(sf::Color::Red);
-    //    player->HpDecrease(damage);
-    //}
-
-    // 교수님코드
-
-    attackTimer += dt;
-    if (attackTimer > attackRate)
+    damageTick += dt;
+    if (sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds())&& damageTick > 1.f)
     {
-        if (player->isAlive && sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds()))
-        {
-            attackTimer = 0.f;
-            // 플레이어 피격
-            player->OnHitted(damage);
-        }
+        isHit = true;
+        damageTick = 0.f;
+        player->sprite.setColor(sf::Color::Red);
+        player->HpDecrease(damage);
     }
 
+    // 교수님코드
+    //attackTimer += dt;
+    //if (attackTimer > attackRate)
+    //{
+    //    if (player->isAlive && sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds()))
+    //    {
+    //        attackTimer = 0.f;
+    //        // 플레이어 피격
+    //        player->OnHitted(damage);
+    //    }
+    //}
+
+    if (attackTimer > attackRate)
+    {
+    }
 
 
     if (damageTick > 1.0f && isHit)
