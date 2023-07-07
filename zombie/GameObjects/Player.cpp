@@ -103,12 +103,22 @@ void Player::Update(float dt)
 		sceneDev1->SetCurrentAmmo(-1);
 	}
 
-	if (INPUT_MGR.GetKeyDown(sf::Keyboard::R))
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::R) 
+		&& sceneDev1->GetCurrentAmmo() < sceneDev1->GetReloadAmmo()
+		&& sceneDev1->GetOwnedAmmo() > 0)
 	{
 		if (sceneDev1 != nullptr)
 		{
-			sceneDev1->SetCurrentAmmo(sceneDev1->GetReloadAmmo());
-			sceneDev1->SetOwnedAmmo(sceneDev1->GetReloadAmmo());
+			if (sceneDev1->GetOwnedAmmo() >= sceneDev1->GetReloadAmmo())
+			{
+				sceneDev1->SetCurrentAmmo(sceneDev1->GetReloadAmmo());
+				sceneDev1->SetOwnedAmmo(-sceneDev1->GetReloadAmmo());
+			}
+			else
+			{
+				sceneDev1->SetCurrentAmmo(sceneDev1->GetOwnedAmmo());
+				sceneDev1->SetOwnedAmmo(-sceneDev1->GetOwnedAmmo());
+			}
 		}
 	}
 }
@@ -128,6 +138,14 @@ void Player::HpDecrease(int damage)
 	{
 		//Reset();
 	}
+}
+
+void Player::HpIncrease(int healAmount)
+{
+	if (hp < maxHp)
+		hp += healAmount;
+	else
+		hp = maxHp;
 }
 
 int Player::GetHp() const

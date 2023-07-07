@@ -9,6 +9,8 @@ class SpriteGo;
 class TextGo;
 class Blood;
 class SpriteEffect;
+class HealPackItem;
+class AmmoItem;
 
 class SceneDev1 : public Scene
 {
@@ -16,6 +18,9 @@ protected:
 	ObjectPool<Zombie> poolZombies;
 	ObjectPool<Blood> poolBloods;
 	ObjectPool<SpriteEffect> bloodEffectPool;
+	ObjectPool<HealPackItem> healPackPool;
+	ObjectPool<AmmoItem> ammoPool;
+
 
 	Player* player;
 	//std::list<Zombie*> zombiePool;		// 비활성화 좀비

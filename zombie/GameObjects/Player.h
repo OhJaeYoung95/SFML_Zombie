@@ -34,6 +34,7 @@ public:
 	virtual void Draw(sf::RenderWindow& window) override;
 
 	void HpDecrease(int damage);
+	void HpIncrease(int healAmount);
 	int GetHp() const;
 	int GetMaxHp() const;
 

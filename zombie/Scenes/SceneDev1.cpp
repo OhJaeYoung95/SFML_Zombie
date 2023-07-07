@@ -11,6 +11,8 @@
 #include "TextGo.h"
 #include "Blood.h"
 #include "SpriteEffect.h"
+#include "HealPackItem.h"
+#include "AmmoItem.h"
 
 SceneDev1::SceneDev1() : Scene(SceneId::Dev1), player(nullptr)
 {
@@ -27,6 +29,8 @@ SceneDev1::SceneDev1() : Scene(SceneId::Dev1), player(nullptr)
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/crosshair.png"));
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/blood.png"));
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/ammo_icon.png"));
+	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/health_pickup.png"));
+	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/ammo_pickup.png"));
 
 	window.setMouseCursorVisible(false);
 }
@@ -94,20 +98,36 @@ void SceneDev1::Init()
 		zombie->sortLayer = 2;
 		//zombie->Init();
 		//zombie->pool = ptr;
+	};	
+	healPackPool.OnCreate = [this](HealPackItem* heal) {
+		heal->textureId = "graphics/health_pickup.png";
+		heal->SetPool(&healPackPool);
+		heal->SetPlayer(player);
+		heal->sortLayer = 0;
+		heal->sortOrder = -1;
+	};	
+
+	ammoPool.OnCreate = [this](AmmoItem* ammo) {
+		ammo->textureId = "graphics/ammo_pickup.png";
+		ammo->SetPool(&ammoPool);
+		ammo->SetPlayer(player);
+		ammo->sortLayer = 0;
+		ammo->sortOrder = -1;
 	};
 
 	//ObjectPool<Blood>* ptr = &poolBloods;
-	poolBloods.OnCreate = [this/*, ptr*/](Blood* blood) {
-		blood->textureId = "graphics/blood.png";
-		blood->sortLayer = 1;
-		//blood->pool = ptr;
-		blood->pool = &poolBloods;
-		//poolBloods.GetUseList() = blood->pool;
-	};
+	//poolBloods.OnCreate = [this/*, ptr*/](Blood* blood) {
+	//	blood->textureId = "graphics/blood.png";
+	//	blood->sortLayer = 1;
+	//	//blood->pool = ptr;
+	//	blood->pool = &poolBloods;
+	//	//poolBloods.GetUseList() = blood->pool;
+	//};
 
 	// 풀 Init
 	poolZombies.Init();
-	poolBloods.Init();
+
+	//poolBloods.Init();
 
 	bloodEffectPool.OnCreate = [this](SpriteEffect* effect) {
 		effect->textureId = "graphics/blood.png";
@@ -119,6 +139,8 @@ void SceneDev1::Init()
 	};
 
 	bloodEffectPool.Init();
+	healPackPool.Init();
+	ammoPool.Init();
 
 	// 여기 기준 위 아래 순서 생각
 
@@ -223,6 +245,8 @@ void SceneDev1::Release()
 {
 	poolZombies.Release();
 	bloodEffectPool.Release();
+	healPackPool.Release();
+	ammoPool.Release();
 	//poolBloods.Release();
 
 	for (auto go : gameObjects)
@@ -268,7 +292,10 @@ void SceneDev1::Enter()
 	playerMaxHp->SetPosition(hpUIPos);
 
 	poolZombies.Clear();
-	poolBloods.Clear();
+	//poolBloods.Clear();
+	bloodEffectPool.Clear();
+	healPackPool.Clear();
+	ammoPool.Clear();
 }
 
 void SceneDev1::Exit()
@@ -276,9 +303,11 @@ void SceneDev1::Exit()
 	ClearObjectPool(poolZombies);
 	//ClearObjectPool(poolBloods);
 	ClearObjectPool(bloodEffectPool);
+	ClearObjectPool(healPackPool);
+	ClearObjectPool(ammoPool);
 
-	ClearZombies();
-	ClearBloods();
+	//ClearZombies();
+	//ClearBloods();
 	player->Reset();
 	Scene::Exit();
 }
@@ -548,9 +577,26 @@ void SceneDev1::OnDieZombie(Zombie* zombie)
 	blood->SetPosition(zombie->GetPosition());
 	AddGo(blood);
 
+	int randomPick = Utils::RandomRange(0, 6);
+	randomPick = 1;
+	if (randomPick == 0)
+	{
+		HealPackItem* heal = healPackPool.Get();
+		heal->SetPosition(zombie->GetPosition());
+		AddGo(heal);
+	}
+	if (randomPick == 1)
+	{
+		AmmoItem* ammo = ammoPool.Get();
+		ammo->SetPosition(zombie->GetPosition());
+		AddGo(ammo);
+	}
+
 	//zombies.remove(zombie);
 	//zombie->SetActive(false);
 	//zombiePool.push_back(zombie);
+
+
 	RemoveGo(zombie);
 	poolZombies.Return(zombie);
 	score += 10;
@@ -577,11 +623,13 @@ int SceneDev1::GetOwnedAmmo() const
 void SceneDev1::SetCurrentAmmo(int ammo)
 {
 	currentAmmo += ammo;
+	if (currentAmmo >= reloadAmmo)
+		currentAmmo = reloadAmmo;
 }
 
 void SceneDev1::SetOwnedAmmo(int ammo)
 {
-	ownedAmmo -= ammo;
+	ownedAmmo += ammo;
 }
 
 

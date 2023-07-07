@@ -1,13 +1,14 @@
 #pragma once
 #include "SpriteGo.h"
 #include "ObjectPool.h"
+#include "SceneMgr.h"
+#include "Scene.h"
+
 class Item : public SpriteGo
 {
 protected:
 
 public:
-	ObjectPool<Item>* pool;
-
 	Item(const std::string textureId = "", const std::string n = "");
 	virtual ~Item() override;
 
@@ -17,7 +18,5 @@ public:
 
 	virtual void Update(float dt) override;
 	virtual void Draw(sf::RenderWindow& window) override;
-
-	virtual void EatItem(sf::FloatRect col);
 };
 
