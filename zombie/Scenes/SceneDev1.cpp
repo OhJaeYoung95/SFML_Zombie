@@ -11,7 +11,7 @@
 #include "TextGo.h"
 #include "Blood.h"
 #include "SpriteEffect.h"
-
+//테스트용
 SceneDev1::SceneDev1() : Scene(SceneId::Dev1), player(nullptr)
 {
 	// 폰트
