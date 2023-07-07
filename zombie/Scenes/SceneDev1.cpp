@@ -61,6 +61,7 @@ void SceneDev1::Init()
 	uiView.setCenter(centerPos);
 
 	// UI
+	textFrame = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Frame"));
 	textAmmo = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Ammo"));
 	textScore = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Score"));
 	textHiScore = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "HighScore"));
@@ -185,6 +186,15 @@ void SceneDev1::Init()
 	playerMaxHp->SetOrigin(Origins::BC);
 	playerMaxHp->sortLayer = 102;
 	playerMaxHp->sortOrder = 0;
+
+	textFrame->SetPosition(sf::Vector2f(30.f, 80.f));
+	textFrame->text.setCharacterSize(30);
+	textFrame->text.setFillColor(sf::Color::White);
+	textFrame->text.setOutlineThickness(5);
+	textFrame->text.setOutlineColor(sf::Color::Black);
+	textFrame->text.setString("FPS: ");
+	textFrame->SetOrigin(Origins::TL);
+	textFrame->sortLayer = 102;
 
 	textAmmo->SetPosition(sf::Vector2f(140.f, FRAMEWORK.GetWindowSize().y - 10.f));
 	textAmmo->text.setCharacterSize(50);
@@ -317,6 +327,10 @@ void SceneDev1::Update(float dt)
 	Scene::Update(dt);
 	tick -= dt;
 
+	frameTime += clock.restart();
+	frames++;
+
+
 	//std::cout << spawnTimer << std::endl;
 
 	sf::Vector2f mousePos = SCENE_MGR.GetCurrScene()->ScreenToUiPos(INPUT_MGR.GetMousePos());
@@ -417,6 +431,18 @@ void SceneDev1::Update(float dt)
 		ClearZombies();
 	}
 	// UI
+	if (frameTime >= sf::seconds(1.0f))
+	{
+		float fps = frames / frameTime.asSeconds();
+		frames = 0;
+		frameTime = sf::Time::Zero;
+		std::stringstream frameS;
+		frameS << "FPS: " << static_cast<int>(fps);
+		textFrame->text.setString(frameS.str());
+	}
+
+
+
 	std::stringstream ammoS;
 	ammoS << currentAmmo << "/" << ownedAmmo;
 	textAmmo->text.setString(ammoS.str());
@@ -578,7 +604,6 @@ void SceneDev1::OnDieZombie(Zombie* zombie)
 	AddGo(blood);
 
 	int randomPick = Utils::RandomRange(0, 6);
-	randomPick = 1;
 	if (randomPick == 0)
 	{
 		HealPackItem* heal = healPackPool.Get();

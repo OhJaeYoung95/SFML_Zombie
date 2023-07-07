@@ -37,6 +37,11 @@ protected:
 	SpriteGo* mouseCursor;
 	float tick = 0.5f;
 
+	TextGo* textFrame;
+	sf::Clock clock;
+	sf::Time frameTime;
+	int frames = 0;
+
 	SpriteGo* ammoIcon;
 	TextGo* textAmmo;
 
