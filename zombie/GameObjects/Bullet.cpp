@@ -92,3 +92,8 @@ void Bullet::Draw(sf::RenderWindow& window)
 {
 	SpriteGo::Draw(window);
 }
+
+void Bullet::IncreaseDamage()
+{
+	damage += Utils::RandomRange(10,31);
+}
