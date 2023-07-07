@@ -356,6 +356,12 @@ void SceneDev1::Update(float dt)
 		tick = 0.5f;
 	}
 
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Tab))
+	{
+		isFrameOn = !isFrameOn;
+		textFrame->SetActive(isFrameOn);
+	}
+
 	//// ¿Ü°û ÀÌÅ» ¹æÁö
 	//// 50x50ÇÈ¼¿
 	//float playerSize = player->sprite.getGlobalBounds().width / 2 + 15.f;		// ÇÃ·¹ÀÌ¾î »çÀÌÁî
@@ -431,7 +437,7 @@ void SceneDev1::Update(float dt)
 		ClearZombies();
 	}
 	// UI
-	if (frameTime >= sf::seconds(1.0f))
+	if (frameTime >= sf::seconds(1.0f) && isFrameOn)
 	{
 		float fps = frames / frameTime.asSeconds();
 		frames = 0;

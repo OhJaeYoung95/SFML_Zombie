@@ -37,6 +37,8 @@ protected:
 	SpriteGo* mouseCursor;
 	float tick = 0.5f;
 
+	bool isFrameOn = true;
+
 	TextGo* textFrame;
 	sf::Clock clock;
 	sf::Time frameTime;
