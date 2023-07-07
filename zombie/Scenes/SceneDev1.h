@@ -34,11 +34,16 @@ protected:
 
 	SpriteGo* ammoIcon;
 	TextGo* textAmmo;
+	SpriteGo* startImg; // 이승우 추가
 
 	TextGo* textScore;
 	TextGo* textHiScore;
 	TextGo* textZombieCount;
 	TextGo* textWave;
+
+	TextGo* startText; // 이승우 추가
+	bool activeGameAll; // 이걸로 이제 draw를 관리하는 SetActive로 만들 예정
+	bool play; // 이건 현재 게임 시작할때 SetActive는 true로 만들기
 
 	int score = 0;
 	int hiScore = 0;
@@ -64,7 +69,7 @@ protected:
 	//float maxClampY;
 	//float minClampY;
 
-
+	bool isTitle = false;
 public:
 
 	SceneDev1();
@@ -102,6 +107,9 @@ public:
 	void SetOwnedAmmo(int ammo);
 
 	const std::list<Zombie*>* GetZombieList() const;
+
+	// 이승우 함수 추가 SetActive게임 씬 들을설정
+	void SetActiveGameScene(bool typee);
 };
 
 template<typename T>

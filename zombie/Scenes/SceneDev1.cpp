@@ -27,6 +27,7 @@ SceneDev1::SceneDev1() : Scene(SceneId::Dev1), player(nullptr)
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/crosshair.png"));
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/blood.png"));
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/ammo_icon.png"));
+	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/background.png"));
 
 	window.setMouseCursorVisible(false);
 }
@@ -39,6 +40,11 @@ SceneDev1::~SceneDev1()
 void SceneDev1::Init()
 {
 	Release();
+//
+	isTitle = false;
+	play = true;
+	activeGameAll = true;
+//
 	score = 0;
 	wave = 1;
 	zombieCount = 0;
@@ -62,6 +68,7 @@ void SceneDev1::Init()
 	textHiScore = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "HighScore"));
 	textZombieCount = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "ZombieCount"));
 	textWave = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Wave"));
+	startText = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "StartTitle")); // 이승우 추가
 
 	//sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
 	//sf::Vector2f centerPos = windowSize * 0.5f;
@@ -181,7 +188,7 @@ void SceneDev1::Init()
 	textScore->text.setString("SCORE: ");
 	textScore->SetOrigin(Origins::TL);
 	textScore->sortLayer = 102;
-
+	
 	textHiScore->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSize().x - 100.f, 10.f));
 	textHiScore->text.setCharacterSize(50);
 	textHiScore->text.setFillColor(sf::Color::White);
@@ -209,6 +216,21 @@ void SceneDev1::Init()
 	textWave->SetOrigin(Origins::BL);
 	textWave->sortLayer = 102;
 
+	//
+	startText->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSize() * 0.5f));
+	startText->text.setCharacterSize(100);
+	startText->text.setOutlineThickness(5);
+	startText->text.setOutlineColor(sf::Color::Black);
+	startText->text.setString("Press return to start");
+	startText->SetOrigin(Origins::BC);
+	startText->sortLayer = 101;
+	
+	startImg = (SpriteGo*)AddGo(new SpriteGo("graphics/background.png", "Title"));
+	startImg->SetOrigin(Origins::MC);
+	startImg->sortLayer = -1;
+	
+	// 이승우 추가
+	// 
 	// 외곽 이탈 방지
 	// 50x50픽셀
 	//maxClampX = static_cast<float>(((bgSize.x - 1) * tileSize.x) / 2) - playerSize;
@@ -235,6 +257,11 @@ void SceneDev1::Release()
 void SceneDev1::Enter()
 {
 	Scene::Enter();
+//
+	isTitle = false;
+	play = true;
+	activeGameAll = true;
+//
 	hiScore = hiScore < score ? score : hiScore;
 	score = 0;
 	wave = 1;
@@ -286,6 +313,28 @@ void SceneDev1::Exit()
 void SceneDev1::Update(float dt)
 {
 	Scene::Update(dt);
+	if (!isTitle && activeGameAll)
+	{
+		activeGameAll = false;
+		SetActiveGameScene(activeGameAll);
+	}
+	if (!isTitle)
+	{
+		
+		if (INPUT_MGR.GetKeyDown(sf::Keyboard::Return))
+		{
+			isTitle = true;
+			startText->SetActive(false); // 혹시나 새롭게 시작할때 Remove하면 문제가 발생하기때문에 false로 만들 예정
+			startImg->SetActive(false);
+		}
+		return;
+	}
+	if (isTitle && !activeGameAll)
+	{
+		activeGameAll = true;
+		SetActiveGameScene(activeGameAll);
+	}
+	
 	tick -= dt;
 
 	//std::cout << spawnTimer << std::endl;
@@ -416,7 +465,9 @@ void SceneDev1::Update(float dt)
 
 void SceneDev1::Draw(sf::RenderWindow& window)
 {
+
 	Scene::Draw(window);
+	
 }
 
 VertexArrayGo* SceneDev1::CreateBackground(sf::Vector2i size, sf::Vector2f tileSize, sf::Vector2f texSize, std::string textureId)
@@ -588,6 +639,19 @@ void SceneDev1::SetOwnedAmmo(int ammo)
 const std::list<Zombie*>* SceneDev1::GetZombieList() const
 {
 	return &poolZombies.GetUseList();
+}
+
+void SceneDev1::SetActiveGameScene(bool typee)
+{
+	player->SetActive(typee);
+	textScore->SetActive(typee);
+	textHiScore->SetActive(typee);
+	textZombieCount->SetActive(typee);
+	textWave->SetActive(typee);
+	ammoIcon->SetActive(typee);
+	textAmmo->SetActive(typee);
+	playerHp->SetActive(typee);
+	playerMaxHp->SetActive(typee);
 }
 
 void SceneDev1::OnDiePlayer()
