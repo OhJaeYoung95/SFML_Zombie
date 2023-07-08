@@ -23,6 +23,7 @@ protected:
 
 
 	Player* player;
+	Zombie* zombie;
 	//std::list<Zombie*> zombiePool;		// 비활성화 좀비
 	//std::list<Zombie*> zombies;			// 활성화 좀비
 
@@ -43,7 +44,7 @@ protected:
 	sf::Clock clock;
 	sf::Time frameTime;
 	int frames = 0;
-
+	bool isPause = false;
 	SpriteGo* ammoIcon;
 	TextGo* textAmmo;
 
@@ -51,6 +52,8 @@ protected:
 	TextGo* textHiScore;
 	TextGo* textZombieCount;
 	TextGo* textWave;
+	TextGo* textPlayerdie;
+	TextGo* textPause;
 
 	int score = 0;
 	int hiScore = 0;
@@ -64,7 +67,6 @@ protected:
 
 	SpriteGo* playerHp;
 	SpriteGo* playerMaxHp;
-
 
 	sf::Vector2i bgSize = { 20, 20 };
 	sf::Vector2f tileSize = { 50.f, 50.f };
@@ -90,6 +92,8 @@ public:
 
 	virtual void Update(float dt) override;
 	virtual void Draw(sf::RenderWindow& window) override;
+	
+	bool GetIsPause() { return isPause; }
 
 	VertexArrayGo* CreateBackground(sf::Vector2i size, sf::Vector2f tileSize, sf::Vector2f texSize, std::string textureId);
 
@@ -105,11 +109,13 @@ public:
 	void OnDieZombie(Zombie* zombie);
 	void OnDiePlayer();
 
+	void PlayerDieUI();
+	void RestartUI();
 	// 탄창
 	int GetReloadAmmo() const;
 	int GetCurrentAmmo() const;
 	int GetOwnedAmmo() const;
-
+	
 	void SetReloadAmmo(const int ammo);
 	void SetCurrentAmmo(const int ammo);
 	void SetOwnedAmmo(const int ammo);

@@ -28,7 +28,6 @@ protected:
 
 public:
 	Player(const std::string textureId = "", const std::string n = "");
-
 	virtual void Init() override;
 	virtual void Release() override;
 	virtual void Reset() override;
@@ -40,7 +39,6 @@ public:
 	void HpIncrease(int healAmount);
 	int GetHp() const;
 	int GetMaxHp() const;
-
 	// ±³¼ö´Ô ÄÚµå
 	void SetWallBounds(const sf::FloatRect& bounds);
 

@@ -51,6 +51,13 @@ void Zombie::Update(float dt)
 {
     SpriteGo::Update(dt);
 
+    Scene* scene = SCENE_MGR.GetCurrScene();
+    SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
+    if (sceneDev1->GetIsPause())
+    {
+        return;
+    }
+
     if (player == nullptr)
         return;
 
@@ -115,7 +122,7 @@ void Zombie::FollowPlayer(float dt)
 {
     // 플레이어 따라가기
     float distance = Utils::Distance(player->GetPosition(), position);
-    if (distance > 25.f)
+    if (distance > 25.f && isActive)
     {
         position += direction * speed * dt;
         sprite.setPosition(position);

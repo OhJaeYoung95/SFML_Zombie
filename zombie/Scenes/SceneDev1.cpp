@@ -71,6 +71,8 @@ void SceneDev1::Init()
 	textHiScore = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "HighScore"));
 	textZombieCount = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "ZombieCount"));
 	textWave = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Wave"));
+	textPlayerdie = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Playerdie"));
+	textPause = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "textPause"));
 
 	//sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
 	//sf::Vector2f centerPos = windowSize * 0.5f;
@@ -243,6 +245,27 @@ void SceneDev1::Init()
 	textWave->SetOrigin(Origins::BL);
 	textWave->sortLayer = 102;
 
+	textPlayerdie->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSize().x / 2, FRAMEWORK.GetWindowSize().y / 2));
+	textPlayerdie->text.setFillColor(sf::Color::Red);
+	textPlayerdie->text.setOutlineColor(sf::Color::Black);
+	textPlayerdie->text.setOutlineThickness(5);
+	textPlayerdie->SetOrigin(Origins::MC);
+	textPlayerdie->text.setCharacterSize(80);
+	textPlayerdie->sortLayer = 104;
+	textPlayerdie->text.setString("Game Over\n\nReStart: Y End: N");
+	textPlayerdie->SetActive(false);
+
+	textPause->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSize().x / 2, FRAMEWORK.GetWindowSize().y / 2));
+	textPause->text.setFillColor(sf::Color::Red);
+	textPause->text.setOutlineColor(sf::Color::Black);
+	textPause->text.setOutlineThickness(5);
+	textPause->SetOrigin(Origins::MC);
+	textPause->text.setCharacterSize(100);
+	textPause->text.setString("P A U S E");
+	textPause->SetActive(false);
+	textPause->sortLayer = 105;
+
+
 	// 외곽 이탈 방지
 	// 50x50픽셀
 	//maxClampX = static_cast<float>(((bgSize.x - 1) * tileSize.x) / 2) - playerSize;
@@ -327,6 +350,8 @@ void SceneDev1::Exit()
 void SceneDev1::Update(float dt)
 {
 	Scene::Update(dt);
+
+
 	tick -= dt;
 
 	frameTime += clock.restart();
@@ -344,9 +369,10 @@ void SceneDev1::Update(float dt)
 
 	if (player->GetHp() <= 0)
 	{
-		Enter();
+		OnDiePlayer();
+		//Enter();
 	}
-
+	
 	// 마우스 커서클릭
 	if (INPUT_MGR.GetMouseButtonDown(sf::Mouse::Left))
 	{
@@ -395,39 +421,65 @@ void SceneDev1::Update(float dt)
 	//	pos.y = minClampY;
 	//	player->SetPosition(pos);
 	//}
-
 	
+
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::P))
+	{
+		isPause = !isPause;
+		if (isPause)
+		{
+			textPause->SetActive(true);
+		}
+		else
+		{
+			textPause->SetActive(false);
+		}
+		//텍스트
+	}
 
 	if (isGameOver)
 	{
-		SCENE_MGR.ChangeScene(sceneId);
-		return;
-	}
-
-	// 스폰 타이머 계산을 앞으로 하면 안된다.. ??
-	if (zombieCount == 0 && spawnTimer < 0)
-	{
-		wave++;
-		spawnTimer = spawnRate;
-	}
-	spawnTimer -= dt;
-
-	if (zombieCount == 0)
-	{
-		switch (wave)
+		PlayerDieUI();
+		if (INPUT_MGR.GetKeyDown(sf::Keyboard::Y))
 		{
-		case 1:
-			if(spawnTimer < 0)
-				SpawnZombies(wave * 10, player->GetPosition(), 500.f);
-			break;
-		case 2:
-			if (spawnTimer < 0)
-				SpawnZombies(wave * 10, player->GetPosition(), 500.f);
-			break;
-		case 3:
-			if (spawnTimer < 0)
-				SpawnZombies(wave * 10, player->GetPosition(), 500.f);
-			break;
+			RestartUI();
+			SCENE_MGR.ChangeScene(sceneId);
+			return;
+		}
+		if (INPUT_MGR.GetKeyDown(sf::Keyboard::N))
+		{
+			window.close();
+		}
+
+	}
+	// 스폰 타이머 계산을 앞으로 하면 안된다.. ??
+	if (!isPause)
+	{
+		if (zombieCount == 0 && spawnTimer < 0)
+		{
+			wave++;
+			spawnTimer = spawnRate;
+		}
+		spawnTimer -= dt;
+
+		if (zombieCount == 0)
+		{
+
+			switch (wave)
+			{
+			case 1:
+				if (spawnTimer < 0)
+					SpawnZombies(wave * 10, player->GetPosition(), 500.f);
+				break;
+			case 2:
+				if (spawnTimer < 0)
+					SpawnZombies(wave * 10, player->GetPosition(), 500.f);
+				break;
+			case 3:
+				if (spawnTimer < 0)
+					SpawnZombies(wave * 10, player->GetPosition(), 500.f);
+				break;
+			}
 		}
 	}
 	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
@@ -682,4 +734,35 @@ void SceneDev1::OnDiePlayer()
 {
 	//SCENE_MGR.ChangeScene(sceneId);
 	isGameOver = true;
+}
+
+void SceneDev1::PlayerDieUI()
+{
+	ClearZombies();
+	textPlayerdie->SetActive(true);
+	player->SetActive(false);
+	ammoIcon->SetActive(false);
+	textFrame->SetActive(false);
+	textAmmo->SetActive(false);
+	textScore->SetActive(false);
+	textHiScore->SetActive(false);
+	textZombieCount->SetActive(false);
+	textWave->SetActive(false);
+	playerHp->SetActive(false);
+	playerMaxHp->SetActive(false);
+}
+
+void SceneDev1::RestartUI()
+{
+	textPlayerdie->SetActive(false);
+	player->SetActive(true);
+	ammoIcon->SetActive(true);
+	textFrame->SetActive(true);
+	textAmmo->SetActive(true);
+	textScore->SetActive(true);
+	textHiScore->SetActive(true);
+	textZombieCount->SetActive(true);
+	textWave->SetActive(true);
+	playerHp->SetActive(true);
+	playerMaxHp->SetActive(true);
 }

@@ -20,7 +20,6 @@ void Player::Init()
 	SetOrigin(Origins::MC);
 
 	ObjectPool<Bullet>* ptr = &poolBullets;
-
 	poolBullets.OnCreate = [ptr](Bullet* bullet) {
 		bullet->textureId = "graphics/bullet.png";
 		bullet->pool = ptr;
@@ -31,12 +30,12 @@ void Player::Init()
 void Player::Release()
 {
 	SpriteGo::Release();
-
 	poolBullets.Release();
 }
 
 void Player::Reset()
 {
+
 	SpriteGo::Reset();
 	sprite.setColor(sf::Color::White);
 
@@ -53,7 +52,15 @@ void Player::Reset()
 
 void Player::Update(float dt)
 {
+
 	SpriteGo::Update(dt);
+
+	Scene* scene = SCENE_MGR.GetCurrScene();
+	SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
+	if (sceneDev1->GetIsPause())
+	{
+		return;
+	}
 	tick -= dt;
 
 	// 플레이어 행동
@@ -98,6 +105,7 @@ int Player::GetMaxHp() const
 	return maxHp;
 }
 
+
 void Player::SetWallBounds(const sf::FloatRect& bounds)
 {
 	wallBounds = bounds;
@@ -112,7 +120,7 @@ void Player::OnHitted(int damage)
 	hp = std::max(hp - damage, 0);
 	if (hp == 0)
 	{
-		OnDie();
+		OnDie(); // 죽어도 씬데브에서 바로 엔터해서 온다이로 이동을 안함 엔터 주석처리하면 안죽음
 	}
 }
 
@@ -145,6 +153,7 @@ void Player::LookAtMouse()
 
 void Player::Move(float dt)
 {
+
 	// 이동
 	direction = { INPUT_MGR.GetAxis(Axis::Horizontal), INPUT_MGR.GetAxis(Axis::Vertical) };
 
@@ -186,6 +195,7 @@ void Player::Shoot()
 		}
 		sceneDev1->SetCurrentAmmo(-1);
 	}
+
 }
 
 void Player::Reload()
