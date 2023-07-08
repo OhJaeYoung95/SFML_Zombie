@@ -318,7 +318,7 @@ void SceneDev1::Init()
 	increaseHp->text.setCharacterSize(50);
 	increaseHp->text.setOutlineThickness(5);
 	increaseHp->text.setOutlineColor(sf::Color::Black);
-	increaseHp->text.setString("1.ncreaseHP");
+	increaseHp->text.setString("1.increaseHP");
 	increaseHp->SetOrigin(Origins::BL);
 	increaseHp->SetActive(false);
 	increaseHp->sortLayer = 102;
