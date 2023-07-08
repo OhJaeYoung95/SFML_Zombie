@@ -59,6 +59,17 @@ void Bullet::Update(float dt)
 {
 	SpriteGo::Update(dt);
 
+	Move(dt);
+	HitZombie();
+}
+
+void Bullet::Draw(sf::RenderWindow& window)
+{
+	SpriteGo::Draw(window);
+}
+
+void Bullet::Move(float dt)
+{
 	range -= speed * dt;
 	if (range < 0)
 	{
@@ -71,6 +82,10 @@ void Bullet::Update(float dt)
 	position += direction * speed * dt;
 	sprite.setPosition(position);
 
+}
+
+void Bullet::HitZombie()
+{
 	if (zombies != nullptr)
 	{
 		for (Zombie* zombie : *zombies)
@@ -86,9 +101,4 @@ void Bullet::Update(float dt)
 			}
 		}
 	}
-}
-
-void Bullet::Draw(sf::RenderWindow& window)
-{
-	SpriteGo::Draw(window);
 }
