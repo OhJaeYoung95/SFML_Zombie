@@ -34,11 +34,7 @@ void AmmoItem::Reset()
 void AmmoItem::Update(float dt)
 {
 	Item::Update(dt);
-	if (player->sprite.getGlobalBounds().intersects(this->sprite.getGlobalBounds()))
-	{
-		EatItem();
-	}
-	//EatItem(player->sprite.getGlobalBounds());
+	ColPlayer();
 }
 
 void AmmoItem::Draw(sf::RenderWindow& window)
@@ -56,4 +52,12 @@ void AmmoItem::EatItem()
 	Scene* scene = SCENE_MGR.GetCurrScene();
 	SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
 	sceneDev1->SetOwnedAmmo(increaseAmmo);	
+}
+
+void AmmoItem::ColPlayer()
+{
+	if (player->sprite.getGlobalBounds().intersects(this->sprite.getGlobalBounds()))
+	{
+		EatItem();
+	}
 }

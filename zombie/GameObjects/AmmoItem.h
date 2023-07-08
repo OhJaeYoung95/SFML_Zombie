@@ -26,4 +26,6 @@ public:
 	void EatItem();
 	void SetPool(ObjectPool<AmmoItem>* pool) { this->pool = pool; }
 	void SetPlayer(Player* player) { this->player = player; }
+
+	void ColPlayer();
 };
