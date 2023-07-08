@@ -3,6 +3,7 @@
 #include "ObjectPool.h"
 
 class Bullet;
+//class SceneDev1;
 
 class Player : public SpriteGo
 {
@@ -14,6 +15,8 @@ protected:
 	int hp = 0;
 
 	float tick = 0.5f;
+
+	int reloadSuccessRate = 3;
 
 	// ±³¼ö´Ô
 	sf::FloatRect wallBounds;
@@ -44,5 +47,10 @@ public:
 	bool isAlive = false;
 	void OnHitted(int damage);
 	void OnDie();
+	
+	void LookAtMouse();
+	void Move(float dt);
+	void Shoot();
+	void Reload();
 };
 

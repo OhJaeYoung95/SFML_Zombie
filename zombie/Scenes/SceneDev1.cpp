@@ -651,14 +651,19 @@ int SceneDev1::GetOwnedAmmo() const
 	return ownedAmmo;
 }
 
-void SceneDev1::SetCurrentAmmo(int ammo)
+void SceneDev1::SetReloadAmmo(const int ammo)
+{
+	reloadAmmo = ammo;
+}
+
+void SceneDev1::SetCurrentAmmo(const int ammo)
 {
 	currentAmmo += ammo;
 	if (currentAmmo >= reloadAmmo)
 		currentAmmo = reloadAmmo;
 }
 
-void SceneDev1::SetOwnedAmmo(int ammo)
+void SceneDev1::SetOwnedAmmo(const int ammo)
 {
 	ownedAmmo += ammo;
 }
@@ -668,6 +673,8 @@ const std::list<Zombie*>* SceneDev1::GetZombieList() const
 {
 	return &poolZombies.GetUseList();
 }
+
+
 
 void SceneDev1::OnDiePlayer()
 {

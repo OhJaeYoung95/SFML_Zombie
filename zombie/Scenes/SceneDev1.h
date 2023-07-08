@@ -110,8 +110,9 @@ public:
 	int GetCurrentAmmo() const;
 	int GetOwnedAmmo() const;
 
-	void SetCurrentAmmo(int ammo);
-	void SetOwnedAmmo(int ammo);
+	void SetReloadAmmo(const int ammo);
+	void SetCurrentAmmo(const int ammo);
+	void SetOwnedAmmo(const int ammo);
 
 	const std::list<Zombie*>* GetZombieList() const;
 };
