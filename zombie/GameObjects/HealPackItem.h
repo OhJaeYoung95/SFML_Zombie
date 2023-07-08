@@ -25,5 +25,7 @@ public:
 	void EatItem();
 	void SetPool(ObjectPool<HealPackItem>* pool) { this->pool = pool; }
 	void SetPlayer(Player* player) { this->player = player; }
+
+	void ColPlayer();
 };
 

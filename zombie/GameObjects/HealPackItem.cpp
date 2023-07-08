@@ -32,11 +32,7 @@ void HealPackItem::Reset()
 void HealPackItem::Update(float dt)
 {
 	Item::Update(dt);
-	if (player->sprite.getGlobalBounds().intersects(this->sprite.getGlobalBounds()))
-	{
-		EatItem();
-	}
-	//EatItem(player->sprite.getGlobalBounds());
+	ColPlayer();
 }
 
 void HealPackItem::Draw(sf::RenderWindow& window)
@@ -52,4 +48,12 @@ void HealPackItem::EatItem()
 	SCENE_MGR.GetCurrScene()->RemoveGo(this);
 
 	player->HpIncrease(increaseHp);
+}
+
+void HealPackItem::ColPlayer()
+{
+	if (player->sprite.getGlobalBounds().intersects(this->sprite.getGlobalBounds()))
+	{
+		EatItem();
+	}
 }
