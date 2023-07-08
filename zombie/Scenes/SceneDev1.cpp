@@ -40,11 +40,12 @@ SceneDev1::~SceneDev1()
 void SceneDev1::Init()
 {
 	Release();
-//
+	//
 	isTitle = false;
 	play = true;
 	activeGameAll = true;
-//
+	increaseState = false;
+	//
 	score = 0;
 	wave = 1;
 	zombieCount = 0;
@@ -68,12 +69,16 @@ void SceneDev1::Init()
 	textHiScore = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "HighScore"));
 	textZombieCount = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "ZombieCount"));
 	textWave = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Wave"));
+	//
 	startText = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "StartTitle")); // 이승우 추가
+	increaseHp = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "IncreaseHp")); // ?("fonts/zombiecontrol.ttf", "IncreaseHp")
+	increaseDamage = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "IncreaseDamage"));
+	increaseBulletCount = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "increaseBulletCount"));
+	//
+		//sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
+		//sf::Vector2f centerPos = windowSize * 0.5f;
 
-	//sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
-	//sf::Vector2f centerPos = windowSize * 0.5f;
-
-	// 교수님 코드
+		// 교수님 코드
 	sf::Vector2f tileWorldSize = tileSize;
 	sf::Vector2f tileTexSize = { 50.f, 50.f };
 
@@ -85,7 +90,7 @@ void SceneDev1::Init()
 	playerHp = (SpriteGo*)AddGo(new SpriteGo());
 	playerMaxHp = (SpriteGo*)AddGo(new SpriteGo());
 
-	VertexArrayGo* background = CreateBackground(bgSize, tileSize, {50.f, 50.f}, "graphics/background_sheet.png");
+	VertexArrayGo* background = CreateBackground(bgSize, tileSize, { 50.f, 50.f }, "graphics/background_sheet.png");
 	AddGo(background);
 	//VertexArrayGo* background = (VertexArrayGo*)AddGo(new VertexArrayGo("graphics/background_sheet.png", "BackGround"));
 
@@ -188,7 +193,7 @@ void SceneDev1::Init()
 	textScore->text.setString("SCORE: ");
 	textScore->SetOrigin(Origins::TL);
 	textScore->sortLayer = 102;
-	
+
 	textHiScore->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSize().x - 100.f, 10.f));
 	textHiScore->text.setCharacterSize(50);
 	textHiScore->text.setFillColor(sf::Color::White);
@@ -224,19 +229,47 @@ void SceneDev1::Init()
 	startText->text.setString("Press return to start");
 	startText->SetOrigin(Origins::BC);
 	startText->sortLayer = 101;
-	
+
 	startImg = (SpriteGo*)AddGo(new SpriteGo("graphics/background.png", "Title"));
 	startImg->SetOrigin(Origins::MC);
 	startImg->sortLayer = -1;
-	
+
+
+	increaseHp->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSize().x * 0.1f, FRAMEWORK.GetWindowSize().y * 0.2f));
+	increaseHp->text.setCharacterSize(50);
+	increaseHp->text.setOutlineThickness(5);
+	increaseHp->text.setOutlineColor(sf::Color::Black);
+	increaseHp->text.setString("1.ncreaseHP");
+	increaseHp->SetOrigin(Origins::BL);
+	increaseHp->SetActive(false);
+	increaseHp->sortLayer = 102;
+
+	increaseDamage->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSize().x * 0.1f, FRAMEWORK.GetWindowSize().y * 0.4f));
+	increaseDamage->text.setCharacterSize(50);
+	increaseDamage->text.setOutlineThickness(5);
+	increaseDamage->text.setOutlineColor(sf::Color::Black);
+	increaseDamage->text.setString("2.increaseDamage");
+	increaseDamage->SetOrigin(Origins::BL);
+	increaseDamage->SetActive(false);
+	increaseDamage->sortLayer = 102;
+
+	increaseBulletCount->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSize().x * 0.1f, FRAMEWORK.GetWindowSize().y * 0.6f));
+	increaseBulletCount->text.setCharacterSize(50);
+	increaseBulletCount->text.setOutlineThickness(5);
+	increaseBulletCount->text.setOutlineColor(sf::Color::Black);
+	increaseBulletCount->text.setString("3.increaseBullet");
+	increaseBulletCount->SetOrigin(Origins::BL);
+	increaseBulletCount->SetActive(false);
+	increaseBulletCount->sortLayer = 102;
 	// 이승우 추가
 	// 
-	// 외곽 이탈 방지
-	// 50x50픽셀
-	//maxClampX = static_cast<float>(((bgSize.x - 1) * tileSize.x) / 2) - playerSize;
-	//minClampX = -1 * (static_cast<float>(((bgSize.x - 1) * tileSize.x)) / 2) + playerSize;
-	//maxClampY = static_cast<float>(((bgSize.y - 1) * tileSize.y) / 2) - playerSize;
-	//minClampY = -1 * (static_cast<float>(((bgSize.y - 1) * tileSize.y) / 2)) + playerSize;
+		// 
+		// 외곽 이탈 방지
+		// 50x50픽셀
+		//maxClampX = static_cast<float>(((bgSize.x - 1) * tileSize.x) / 2) - playerSize;
+		//minClampX = -1 * (static_cast<float>(((bgSize.x - 1) * tileSize.x)) / 2) + playerSize;
+		//maxClampY = static_cast<float>(((bgSize.y - 1) * tileSize.y) / 2) - playerSize;
+		//minClampY = -1 * (static_cast<float>(((bgSize.y - 1) * tileSize.y) / 2)) + playerSize;
 
 
 }
@@ -257,11 +290,16 @@ void SceneDev1::Release()
 void SceneDev1::Enter()
 {
 	Scene::Enter();
-//
+	//
+	SetActiveGameScene(false);
+	startImg->SetActive(true);
+	startText->SetActive(true);
+
 	isTitle = false;
 	play = true;
 	activeGameAll = true;
-//
+	increaseState = false;
+	//
 	hiScore = hiScore < score ? score : hiScore;
 	score = 0;
 	wave = 1;
@@ -275,6 +313,9 @@ void SceneDev1::Enter()
 
 	worldView.setCenter(0.f, 0.f);
 	player->SetPosition(0.f, 0.f);
+//
+	player->ResetBulletCount();
+//
 	ClearZombies();
 	ClearBloods();
 
@@ -313,6 +354,7 @@ void SceneDev1::Exit()
 void SceneDev1::Update(float dt)
 {
 	Scene::Update(dt);
+	//
 	if (!isTitle && activeGameAll)
 	{
 		activeGameAll = false;
@@ -320,7 +362,7 @@ void SceneDev1::Update(float dt)
 	}
 	if (!isTitle)
 	{
-		
+
 		if (INPUT_MGR.GetKeyDown(sf::Keyboard::Return))
 		{
 			isTitle = true;
@@ -334,7 +376,7 @@ void SceneDev1::Update(float dt)
 		activeGameAll = true;
 		SetActiveGameScene(activeGameAll);
 	}
-	
+	//	
 	tick -= dt;
 
 	//std::cout << spawnTimer << std::endl;
@@ -394,7 +436,7 @@ void SceneDev1::Update(float dt)
 	//	player->SetPosition(pos);
 	//}
 
-	
+
 
 	if (isGameOver)
 	{
@@ -405,33 +447,68 @@ void SceneDev1::Update(float dt)
 	// 스폰 타이머 계산을 앞으로 하면 안된다.. ??
 	if (zombieCount == 0 && spawnTimer < 0)
 	{
+		increaseState = true;
+		//		
+	}
+	//
+	if (increaseState)
+	{
+		player->SetPosition({ 0.f,0.f });
+		player->ClearBullet();
+		SetActiveGameScene(false);
+		startImg->SetActive(increaseState);
+		PrintState(increaseState);
+		if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
+		{
+			player->IncreaseHp(wave * 10);
+		}
+		else if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num2))
+		{
+			player->IncreaseDamage();
+		}
+		else if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num3))
+		{
+			player->IncreaseBulletCount();
+		}
+		else
+			return;
+		SetActiveGameScene(true);
+		increaseState = false;
+		startImg->SetActive(increaseState);
+		PrintState(increaseState);
 		wave++;
 		spawnTimer = spawnRate;
 	}
+	//
 	spawnTimer -= dt;
-
-	if (zombieCount == 0)
+	//
+	if (zombieCount == 0 && spawnTimer < 0)
 	{
-		switch (wave)
-		{
-		case 1:
-			if(spawnTimer < 0)
-				SpawnZombies(wave * 10, player->GetPosition(), 500.f);
-			break;
-		case 2:
-			if (spawnTimer < 0)
-				SpawnZombies(wave * 10, player->GetPosition(), 500.f);
-			break;
-		case 3:
-			if (spawnTimer < 0)
-				SpawnZombies(wave * 10, player->GetPosition(), 500.f);
-			break;
-		}
+		SpawnZombies(wave * 10, player->GetPosition(), 500.f);
+
+		/*		switch (wave)
+				{
+				case 1:
+					if(spawnTimer < 0)
+						SpawnZombies(wave * 10, player->GetPosition(), 500.f);
+					break;
+				case 2:
+					if (spawnTimer < 0)
+						SpawnZombies(wave * 10, player->GetPosition(), 500.f);
+					break;
+				case 3:
+					if (spawnTimer < 0)
+						SpawnZombies(wave * 10, player->GetPosition(), 500.f);
+					break;
+				}
+		*/
 	}
-	//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
-	//{
-	//	SpawnZombies(1, player->GetPosition(), 300.f);
-	//}
+
+	//
+		//if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
+		//{
+		//	SpawnZombies(1, player->GetPosition(), 300.f);
+		//}
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num2))
 	{
 		ClearZombies();
@@ -467,7 +544,7 @@ void SceneDev1::Draw(sf::RenderWindow& window)
 {
 
 	Scene::Draw(window);
-	
+
 }
 
 VertexArrayGo* SceneDev1::CreateBackground(sf::Vector2i size, sf::Vector2f tileSize, sf::Vector2f texSize, std::string textureId)
@@ -484,8 +561,8 @@ VertexArrayGo* SceneDev1::CreateBackground(sf::Vector2i size, sf::Vector2f tileS
 		{tileSize.x, 0.f},
 		{tileSize.x, tileSize.y},
 		{0.f, tileSize.y}
-	};	
-	
+	};
+
 	sf::Vector2f texOffsets[4] =
 	{
 		{0.f, 0.f},
@@ -522,7 +599,7 @@ VertexArrayGo* SceneDev1::CreateBackground(sf::Vector2i size, sf::Vector2f tileS
 }
 
 void SceneDev1::CreateZombies(int count)
-{	
+{
 	for (int i = 0; i < count; i++)
 	{
 		//Zombie* zombie = new Zombie();
@@ -640,7 +717,7 @@ const std::list<Zombie*>* SceneDev1::GetZombieList() const
 {
 	return &poolZombies.GetUseList();
 }
-
+//
 void SceneDev1::SetActiveGameScene(bool typee)
 {
 	player->SetActive(typee);
@@ -653,7 +730,13 @@ void SceneDev1::SetActiveGameScene(bool typee)
 	playerHp->SetActive(typee);
 	playerMaxHp->SetActive(typee);
 }
-
+void SceneDev1::PrintState(bool type)
+{
+	increaseHp->SetActive(type);
+	increaseDamage->SetActive(type);
+	increaseBulletCount->SetActive(type);
+}
+//
 void SceneDev1::OnDiePlayer()
 {
 	//SCENE_MGR.ChangeScene(sceneId);

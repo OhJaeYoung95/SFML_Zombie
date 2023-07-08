@@ -14,7 +14,9 @@ protected:
 	float speed = 0.f;
 	float range = 2000.f;
 	int damage = 25;
-
+//
+	
+//
 	const std::list<Zombie*>* zombies;
 
 public:
@@ -33,7 +35,8 @@ public:
 
 	virtual void Update(float dt) override;
 	virtual void Draw(sf::RenderWindow& window) override;
-	
-	void IncreaseDamage();
+//
+	void SetDamage(int number);
+//
 };
 

@@ -17,6 +17,10 @@ Player::Player(const std::string textureId, const std::string n)
 void Player::Init()
 {
 	SpriteGo::Init();
+	//
+	increaseDamage = false;
+	bulletCount = 1;
+	//
 	SetOrigin(Origins::MC);
 
 	ObjectPool<Bullet>* ptr = &poolBullets;
@@ -38,8 +42,12 @@ void Player::Release()
 void Player::Reset()
 {
 	SpriteGo::Reset();
+//
+	maxHp = 100;
+	increaseDamage = false;
+	bulletDamage = 25;
+//
 	sprite.setColor(sf::Color::White);
-
 	isAlive = true;
 	hp = maxHp;
 
@@ -67,7 +75,7 @@ void Player::Update(float dt)
 	sprite.setRotation(Utils::Angle(look));
 
 	// 이동
-	direction = { INPUT_MGR.GetAxis(Axis::Horizontal), INPUT_MGR.GetAxis(Axis::Vertical)};
+	direction = { INPUT_MGR.GetAxis(Axis::Horizontal), INPUT_MGR.GetAxis(Axis::Vertical) };
 
 	float magnitude = Utils::Magnitude(direction);
 	if (magnitude > 1.f)
@@ -75,7 +83,7 @@ void Player::Update(float dt)
 		direction /= magnitude;
 	}
 
-	std::cout << direction.x << std::endl;
+	//	std::cout << direction.x << std::endl;
 	position += direction * speed * dt;	// -2433, -29~-30, -80~80	
 	sprite.setPosition(position);
 
@@ -86,21 +94,54 @@ void Player::Update(float dt)
 	}
 	Scene* scene = SCENE_MGR.GetCurrScene();
 	SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
-
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Space))
+	{
+		std::cout <<  "X :" << look.x << std::endl;
+		std::cout << " Y :" << look.y << std::endl;
+	}
 	if (INPUT_MGR.GetMouseButtonDown(sf::Mouse::Left) && tick < 0.4f && sceneDev1->GetCurrentAmmo() > 0)
 	{
 		tick = 0.5f;
-		Bullet* bullet = poolBullets.Get();
-		// Pool에서 Init()랑 Reset()을 해주니 생략
-		//bullet->Init();
-		//bullet->Reset();
-		bullet->Fire(GetPosition(), look, 1000.f);
-		if (sceneDev1 != nullptr)
+		int count = 0;
+		while (count != bulletCount)
 		{
-			bullet->SetZombieList(sceneDev1->GetZombieList());
-			sceneDev1->AddGo(bullet);
+			Bullet* bullet = poolBullets.Get();
+			//
+			if (increaseDamage)
+			{
+				bulletDamage += Utils::RandomRange(10, 31);
+				increaseDamage = false;
+			}
+			bullet->SetDamage(bulletDamage);
+			bullet->Fire(GetPosition(), look + sf::Vector2f{ 0.1f * count, 0.1f * count }, 1000.f);
+			if (sceneDev1 != nullptr)
+			{
+				bullet->SetZombieList(sceneDev1->GetZombieList());
+				sceneDev1->AddGo(bullet);
+			}
+			sceneDev1->SetCurrentAmmo(-1);
+			count++;
 		}
-		sceneDev1->SetCurrentAmmo(-1);
+		//Bullet* bullet = poolBullets.Get();
+		////
+		//if (increaseDamage)
+		//{
+		//	bulletDamage += Utils::RandomRange(10, 31);
+		//	increaseDamage = false;
+		//}
+		//bullet->SetDamage(bulletDamage);
+		////
+		//		// Pool에서 Init()랑 Reset()을 해주니 생략
+		//		//bullet->Init();
+		//		//bullet->Reset();
+		//bullet->Fire(GetPosition(), look, 1000.f);
+		//if (sceneDev1 != nullptr)
+		//{
+		//	bullet->SetZombieList(sceneDev1->GetZombieList());
+		//	sceneDev1->AddGo(bullet);
+		//}
+		//sceneDev1->SetCurrentAmmo(-1);
+
 	}
 
 	if (INPUT_MGR.GetKeyDown(sf::Keyboard::R))
@@ -111,6 +152,7 @@ void Player::Update(float dt)
 			sceneDev1->SetOwnedAmmo(sceneDev1->GetReloadAmmo());
 		}
 	}
+
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -140,11 +182,43 @@ int Player::GetMaxHp() const
 	return maxHp;
 }
 
+void Player::IncreaseHp(int hp)
+{
+	this->hp += hp;
+	maxHp += hp;
+}
+
+void Player::IncreaseDamage()
+{
+	increaseDamage = true;
+}
+
+void Player::IncreaseBulletCount()
+{
+	bulletCount++;
+}
+
+void Player::ResetBulletCount()
+{
+	bulletCount = 1;
+}
+
+void Player::ClearBullet()
+{
+	Scene* scene = SCENE_MGR.GetCurrScene();
+	SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
+	for (auto bullet : poolBullets.GetUseList())
+	{
+		sceneDev1->RemoveGo(bullet);
+	}
+	poolBullets.Clear();
+}
+
 void Player::SetWallBounds(const sf::FloatRect& bounds)
 {
 	wallBounds = bounds;
 	wallBoundsLT = { wallBounds.left, wallBounds.top };
-	wallBoundsRB = wallBoundsLT + sf::Vector2f{wallBounds.width, wallBounds.height};
+	wallBoundsRB = wallBoundsLT + sf::Vector2f{ wallBounds.width, wallBounds.height };
 }
 
 void Player::OnHitted(int damage)

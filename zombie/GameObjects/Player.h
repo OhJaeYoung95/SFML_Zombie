@@ -22,7 +22,11 @@ protected:
 
 
 	ObjectPool<Bullet> poolBullets;
-
+//
+	bool increaseDamage;
+	int bulletDamage = 25;
+	int bulletCount ;
+//
 public:
 	Player(const std::string textureId = "", const std::string n = "");
 
@@ -36,7 +40,13 @@ public:
 	void HpDecrease(int damage);
 	int GetHp() const;
 	int GetMaxHp() const;
-
+//
+	void IncreaseHp(int hp);
+	void IncreaseDamage();
+	void IncreaseBulletCount();
+	void ResetBulletCount();
+	void ClearBullet();
+//
 	// ±³¼ö´Ô ÄÚµå
 	void SetWallBounds(const sf::FloatRect& bounds);
 

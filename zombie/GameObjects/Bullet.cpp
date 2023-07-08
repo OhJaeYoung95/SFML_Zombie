@@ -5,6 +5,8 @@
 #include "SceneMgr.h"
 #include "Scene.h"
 
+
+#include "InputMgr.h"
 Bullet::Bullet(const std::string textureId, const std::string n)
 	: SpriteGo(textureId, n)
 {
@@ -47,7 +49,9 @@ void Bullet::Release()
 void Bullet::Reset()
 {
 	SpriteGo::Reset();
-
+//
+	damage = 25;
+//
 	sprite.setRotation(0.f);
 	SetPosition(0.f, 0.f);
 	direction = { 0.f , 0.f };
@@ -88,12 +92,14 @@ void Bullet::Update(float dt)
 	}
 }
 
+
 void Bullet::Draw(sf::RenderWindow& window)
 {
 	SpriteGo::Draw(window);
 }
-
-void Bullet::IncreaseDamage()
+//
+void Bullet::SetDamage(int number)
 {
-	damage += Utils::RandomRange(10,31);
+	damage = number;
 }
+//
