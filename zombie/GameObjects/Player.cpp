@@ -215,7 +215,7 @@ void Player::Reload()
 				}
 				return;
 			}
-
+			// 장전 성공
 			if (sceneDev1->GetOwnedAmmo() >= sceneDev1->GetReloadAmmo())
 			{
 				sceneDev1->SetCurrentAmmo(sceneDev1->GetReloadAmmo());
