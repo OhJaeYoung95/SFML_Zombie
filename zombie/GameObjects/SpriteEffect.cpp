@@ -22,10 +22,15 @@ void SpriteEffect::Reset()
 
 void SpriteEffect::Update(float dt)
 {
+	FadeEffectNRemove(dt);
+}
+
+void SpriteEffect::FadeEffectNRemove(float dt)
+{
 	timer += dt;
 	//sf::Color a = { 255, 255, 255, 0 };
 	//sf::Color b = sf::Color::White;
-	
+
 	//UINT8 color = Utils::Lerp(255, 0, (duration - timer) / duration);
 	//sf::Color color = Utils::Lerp(a, b, ((duration - timer) / duration));
 	//sprite.setColor(color);
@@ -48,4 +53,5 @@ void SpriteEffect::Update(float dt)
 			SetActive(false);
 		}
 	}
+
 }

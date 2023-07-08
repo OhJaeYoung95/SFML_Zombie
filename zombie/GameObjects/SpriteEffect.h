@@ -20,5 +20,7 @@ public:
 	virtual void Reset() override;
 
 	virtual void Update(float dt) override;
+
+	void FadeEffectNRemove(float dt);
 };
 

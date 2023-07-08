@@ -33,6 +33,17 @@ void Blood::Reset()
 void Blood::Update(float dt)
 {
 	SpriteGo::Update(dt);
+
+	FadeEffectNRemove(dt);
+}
+
+void Blood::Draw(sf::RenderWindow& window)
+{
+	SpriteGo::Draw(window);
+}
+
+void Blood::FadeEffectNRemove(float dt)
+{
 	removeTimer -= dt;
 
 	if (pool->GetUseList().empty())
@@ -50,9 +61,4 @@ void Blood::Update(float dt)
 		}
 
 	}
-}
-
-void Blood::Draw(sf::RenderWindow& window)
-{
-	SpriteGo::Draw(window);
 }
