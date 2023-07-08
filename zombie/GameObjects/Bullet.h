@@ -14,6 +14,7 @@ protected:
 	float speed = 0.f;
 	float range = 2000.f;
 	int damage = 25;
+	int maxDamage=25;
 
 	const std::list<Zombie*>* zombies;
 
@@ -36,5 +37,11 @@ public:
 
 	void Move(float dt);
 	void HitZombie();
+
+	void SetDamage(int number);
+	int GetDamage()
+	{
+		return damage;
+	}
 };
 

@@ -5,6 +5,8 @@
 #include "SceneMgr.h"
 #include "Scene.h"
 
+
+#include "InputMgr.h"
 Bullet::Bullet(const std::string textureId, const std::string n)
 	: SpriteGo(textureId, n)
 {
@@ -47,7 +49,10 @@ void Bullet::Release()
 void Bullet::Reset()
 {
 	SpriteGo::Reset();
-
+//
+	maxDamage = 25;
+	damage = 25;
+//
 	sprite.setRotation(0.f);
 	SetPosition(0.f, 0.f);
 	direction = { 0.f , 0.f };
@@ -58,7 +63,7 @@ void Bullet::Reset()
 void Bullet::Update(float dt)
 {
 	SpriteGo::Update(dt);
-
+	
 	Move(dt);
 	HitZombie();
 }
@@ -92,6 +97,7 @@ void Bullet::HitZombie()
 		{
 			if (sprite.getGlobalBounds().intersects(zombie->sprite.getGlobalBounds()))
 			{
+				//std::cout << damage << std::endl;
 				zombie->OnHitBullet(damage);
 
 				SCENE_MGR.GetCurrScene()->RemoveGo(this);
@@ -101,4 +107,9 @@ void Bullet::HitZombie()
 			}
 		}
 	}
+}
+
+void Bullet::SetDamage(int number)
+{
+	damage = number;
 }
