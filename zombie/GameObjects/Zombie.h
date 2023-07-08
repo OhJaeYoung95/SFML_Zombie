@@ -40,7 +40,6 @@ protected:
 
 public:
 	ObjectPool<Zombie>* pool;
-
 	Zombie(const std::string n = "");
 	virtual ~Zombie() override;
 

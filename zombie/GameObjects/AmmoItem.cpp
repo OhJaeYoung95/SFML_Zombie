@@ -4,6 +4,7 @@
 #include "SceneMgr.h"
 #include "Scene.h"
 #include "SceneDev1.h"
+#include "SoundGo.h"
 
 AmmoItem::AmmoItem(const std::string textureId, const std::string n)
 	:Item(textureId, n)
@@ -19,6 +20,7 @@ void AmmoItem::Init()
 	Item::Init();
 	SetOrigin(Origins::MC);
 	increaseAmmo = 30;
+	pickup = new SoundGo("sound/pickup.wav");
 }
 
 void AmmoItem::Release()
@@ -58,6 +60,7 @@ void AmmoItem::ColPlayer()
 {
 	if (player->sprite.getGlobalBounds().intersects(this->sprite.getGlobalBounds()))
 	{
+		pickup->SoundPlayer();
 		EatItem();
 	}
 }

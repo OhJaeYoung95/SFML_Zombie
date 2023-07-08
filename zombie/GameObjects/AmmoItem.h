@@ -3,6 +3,7 @@
 #include "ObjectPool.h"
 
 class Player;
+class SoundGo;
 
 class AmmoItem : public Item
 {
@@ -11,6 +12,8 @@ protected:
 
 	Player* player = nullptr;
 	ObjectPool<AmmoItem>* pool = nullptr;
+
+	SoundGo* pickup;
 
 public:
 	AmmoItem(const std::string textureId = "", const std::string n = "");

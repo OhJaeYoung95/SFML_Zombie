@@ -3,6 +3,7 @@
 #include "ObjectPool.h"
 
 class Bullet;
+class SoundGo;
 //class SceneDev1;
 
 class Player : public SpriteGo
@@ -17,7 +18,11 @@ protected:
 	float tick = 0.5f;
 
 	int reloadSuccessRate = 3;
-
+	SoundGo* shoot;
+	SoundGo* reload;
+	SoundGo* reloadfailed;
+	SoundGo* hitplayer;
+	SoundGo* heal;
 	// ±³¼ö´Ô
 	sf::FloatRect wallBounds;
 	sf::Vector2f wallBoundsLT;
@@ -32,7 +37,6 @@ protected:
 
 public:
 	Player(const std::string textureId = "", const std::string n = "");
-
 	virtual void Init() override;
 	virtual void Release() override;
 	virtual void Reset() override;

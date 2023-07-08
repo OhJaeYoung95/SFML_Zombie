@@ -4,9 +4,9 @@ class TextGo : public GameObject
 {
 protected:
 public:
+
 	std::string textureId;
 	sf::Text text;
-
 	TextGo(const std::string textureId = "", const std::string n = "");
 	virtual ~TextGo() override;
 

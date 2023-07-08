@@ -7,6 +7,7 @@
 #include "SceneDev1.h"
 #include "Framework.h"
 #include "Utils.h"
+#include "SoundGo.h"
 
 Player::Player(const std::string textureId, const std::string n)
 	: SpriteGo(textureId, n)
@@ -24,23 +25,28 @@ void Player::Init()
 	SetOrigin(Origins::MC);
 
 	ObjectPool<Bullet>* ptr = &poolBullets;
-
 	poolBullets.OnCreate = [ptr](Bullet* bullet) {
 		bullet->textureId = "graphics/bullet.png";
 		bullet->pool = ptr;
 	};
 	poolBullets.Init();
+
+	shoot = new SoundGo("sound/shoot.wav");
+	reload = new SoundGo("sound/reload.wav");
+	reloadfailed = new SoundGo("sound/reload_failed.wav");
+	hitplayer = new SoundGo("sound/hit.wav");
+	heal = new SoundGo("sound/pickup.wav");
 }
 
 void Player::Release()
 {
 	SpriteGo::Release();
-
 	poolBullets.Release();
 }
 
 void Player::Reset()
 {
+
 	SpriteGo::Reset();
 
 	maxHp = 100;
@@ -61,7 +67,15 @@ void Player::Reset()
 
 void Player::Update(float dt)
 {
+
 	SpriteGo::Update(dt);
+
+	Scene* scene = SCENE_MGR.GetCurrScene();
+	SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
+	if (sceneDev1->GetIsPause())
+	{
+		return;
+	}
 	tick -= dt;
 
 	// 플레이어 행동
@@ -78,6 +92,7 @@ void Player::Draw(sf::RenderWindow& window)
 
 void Player::HpDecrease(int damage)
 {
+	hitplayer->SoundPlayer();
 	if (!isAlive)
 		return;
 	hp -= damage;
@@ -90,6 +105,7 @@ void Player::HpDecrease(int damage)
 
 void Player::HpIncrease(int healAmount)
 {
+	heal->SoundPlayer();
 	if (hp < maxHp)
 		hp += healAmount;
 	else
@@ -152,7 +168,7 @@ void Player::OnHitted(int damage)
 	hp = std::max(hp - damage, 0);
 	if (hp == 0)
 	{
-		OnDie();
+		OnDie(); // 죽어도 씬데브에서 바로 엔터해서 온다이로 이동을 안함 엔터 주석처리하면 안죽음
 	}
 }
 
@@ -184,6 +200,7 @@ void Player::LookAtMouse()
 
 void Player::Move(float dt)
 {
+
 	// 이동
 	direction = { INPUT_MGR.GetAxis(Axis::Horizontal), INPUT_MGR.GetAxis(Axis::Vertical) };
 
@@ -211,6 +228,7 @@ void Player::Shoot()
 	SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
 	if (INPUT_MGR.GetMouseButtonDown(sf::Mouse::Left) && tick < 0.4f && sceneDev1->GetCurrentAmmo() > 0)
 	{
+		shoot->SoundPlayer();
 		tick = 0.5f;
 		int count = 0;
 		while (count != bulletCount)
@@ -233,6 +251,7 @@ void Player::Shoot()
 		}
 		sceneDev1->SetCurrentAmmo(-1);
 	}
+
 }
 
 void Player::Reload()
@@ -252,6 +271,7 @@ void Player::Reload()
 			if (reloadTry == 0)		// 장전실패
 			{
 				// 소리 효과음
+				reloadfailed->SoundPlayer();
 				if (sceneDev1->GetOwnedAmmo() >= sceneDev1->GetReloadAmmo())
 				{
 					sceneDev1->SetOwnedAmmo(-sceneDev1->GetReloadAmmo());
@@ -263,6 +283,7 @@ void Player::Reload()
 				return;
 			}
 			// 장전 성공
+			reload->SoundPlayer();
 			if (sceneDev1->GetOwnedAmmo() >= sceneDev1->GetReloadAmmo())
 			{
 				sceneDev1->SetCurrentAmmo(sceneDev1->GetReloadAmmo());
@@ -275,5 +296,4 @@ void Player::Reload()
 			}
 		}
 	}
-
 }
