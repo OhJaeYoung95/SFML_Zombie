@@ -7,6 +7,7 @@
 #include "SceneDev1.h"
 #include "Framework.h"
 #include "Utils.h"
+#include "SoundGo.h"
 
 Player::Player(const std::string textureId, const std::string n)
 	: SpriteGo(textureId, n)
@@ -25,6 +26,12 @@ void Player::Init()
 		bullet->pool = ptr;
 	};
 	poolBullets.Init();
+
+	shoot = new SoundGo("sound/shoot.wav");
+	reload = new SoundGo("sound/reload.wav");
+	reloadfailed = new SoundGo("sound/reload_failed.wav");
+	hitplayer = new SoundGo("sound/hit.wav");
+	heal = new SoundGo("sound/pickup.wav");
 }
 
 void Player::Release()
@@ -77,6 +84,7 @@ void Player::Draw(sf::RenderWindow& window)
 
 void Player::HpDecrease(int damage)
 {
+	hitplayer->SoundPlayer();
 	if (!isAlive)
 		return;
 	hp -= damage;
@@ -89,6 +97,7 @@ void Player::HpDecrease(int damage)
 
 void Player::HpIncrease(int healAmount)
 {
+	heal->SoundPlayer();
 	if (hp < maxHp)
 		hp += healAmount;
 	else
@@ -179,9 +188,9 @@ void Player::Shoot()
 {
 	Scene* scene = SCENE_MGR.GetCurrScene();
 	SceneDev1* sceneDev1 = dynamic_cast<SceneDev1*>(scene);
-
 	if (INPUT_MGR.GetMouseButtonDown(sf::Mouse::Left) && tick < 0.4f && sceneDev1->GetCurrentAmmo() > 0)
 	{
+		shoot->SoundPlayer();
 		tick = 0.5f;
 		Bullet* bullet = poolBullets.Get();
 		// Pool에서 Init()랑 Reset()을 해주니 생략
@@ -215,6 +224,7 @@ void Player::Reload()
 			if (reloadTry == 0)		// 장전실패
 			{
 				// 소리 효과음
+				reloadfailed->SoundPlayer();
 				if (sceneDev1->GetOwnedAmmo() >= sceneDev1->GetReloadAmmo())
 				{
 					sceneDev1->SetOwnedAmmo(-sceneDev1->GetReloadAmmo());
@@ -226,6 +236,7 @@ void Player::Reload()
 				return;
 			}
 			// 장전 성공
+			reload->SoundPlayer();
 			if (sceneDev1->GetOwnedAmmo() >= sceneDev1->GetReloadAmmo())
 			{
 				sceneDev1->SetCurrentAmmo(sceneDev1->GetReloadAmmo());
@@ -238,5 +249,4 @@ void Player::Reload()
 			}
 		}
 	}
-
 }

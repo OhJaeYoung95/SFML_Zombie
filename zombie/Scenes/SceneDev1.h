@@ -11,6 +11,7 @@ class Blood;
 class SpriteEffect;
 class HealPackItem;
 class AmmoItem;
+class SoundGo;
 
 class SceneDev1 : public Scene
 {
@@ -21,7 +22,9 @@ protected:
 	ObjectPool<HealPackItem> healPackPool;
 	ObjectPool<AmmoItem> ammoPool;
 
-
+	bool onesound = true;
+	//sf::Sound playerdiesound;
+	//sf::SoundBuffer playerdiesoundbuffer;
 	Player* player;
 	Zombie* zombie;
 	//std::list<Zombie*> zombiePool;		// 비활성화 좀비
@@ -47,7 +50,6 @@ protected:
 	bool isPause = false;
 	SpriteGo* ammoIcon;
 	TextGo* textAmmo;
-
 	TextGo* textScore;
 	TextGo* textHiScore;
 	TextGo* textZombieCount;
@@ -55,6 +57,7 @@ protected:
 	TextGo* textPlayerdie;
 	TextGo* textPause;
 
+	SoundGo* playerdiesound;
 	int score = 0;
 	int hiScore = 0;
 

@@ -180,6 +180,7 @@
     <ClCompile Include="GameObjects\Zombie.cpp" />
     <ClCompile Include="GameObjects\TextGo.cpp" />
     <ClCompile Include="GameObjects\SpriteEffect.cpp" />
+    <ClCompile Include="GameObjects\SoundGo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObjects\AmmoItem.h" />
@@ -201,6 +202,7 @@
     <ClInclude Include="Global\Singleton.h" />
     <ClInclude Include="GameObjects\SpriteGo.h" />
     <ClInclude Include="GameObjects\SpriteEffect.h" />
+    <ClInclude Include="GameObjects\SoundGo.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Global\Variables.h" />
     <ClInclude Include="GameObjects\VertexArrayGo.h" />

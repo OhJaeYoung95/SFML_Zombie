@@ -11,7 +11,7 @@
 #include "TextGo.h"
 #include "Blood.h"
 #include "SpriteEffect.h"
-
+#include "SoundGo.h"
 
 
 #include "HealPackItem.h"
@@ -73,10 +73,13 @@ void SceneDev1::Init()
 	textWave = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Wave"));
 	textPlayerdie = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "Playerdie"));
 	textPause = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "textPause"));
+	playerdiesound = new SoundGo("sound/playerdie.wav");
 
+	//playerdiesoundbuffer.loadFromFile("sound/playerdie.wav");
+	//playerdiesound.setBuffer(playerdiesoundbuffer);
 	//sf::Vector2f windowSize = FRAMEWORK.GetWindowSize();
 	//sf::Vector2f centerPos = windowSize * 0.5f;
-
+	
 	// ±³¼ö´Ô ÄÚµå
 	sf::Vector2f tileWorldSize = tileSize;
 	sf::Vector2f tileTexSize = { 50.f, 50.f };
@@ -263,7 +266,7 @@ void SceneDev1::Init()
 	textPause->text.setCharacterSize(100);
 	textPause->text.setString("P A U S E");
 	textPause->SetActive(false);
-	textPause->sortLayer = 105;
+	textPause->sortLayer = 104;
 
 
 	// ¿Ü°û ÀÌÅ» ¹æÁö
@@ -311,7 +314,7 @@ void SceneDev1::Enter()
 	ClearBloods();
 
 	isGameOver = false;
-
+	onesound = true;
 
 	// UI
 	sf::Vector2f hpUIPos = SCENE_MGR.GetCurrScene()->UiPosToScreen(
@@ -367,7 +370,7 @@ void SceneDev1::Update(float dt)
 	// HP UI
 	playerHp->rect.setSize({ (static_cast<float>(player->GetHp()) / static_cast<float>(player->GetMaxHp())) * 300.f, 40.f });
 
-	if (player->GetHp() <= 0)
+	if (player->GetHp() <= 0 && !isGameOver)
 	{
 		OnDiePlayer();
 		//Enter();
@@ -733,6 +736,7 @@ const std::list<Zombie*>* SceneDev1::GetZombieList() const
 void SceneDev1::OnDiePlayer()
 {
 	//SCENE_MGR.ChangeScene(sceneId);
+	playerdiesound->SoundPlayer();
 	isGameOver = true;
 }
 
