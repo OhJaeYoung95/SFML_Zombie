@@ -71,13 +71,11 @@ void SceneDev1::Init()
 	sf::Vector2f tileTexSize = { 50.f, 50.f };
 
 	player = (Player*)AddGo(new Player("graphics/player.png", "Player"));
-
 	ammoIcon = (SpriteGo*)AddGo(new SpriteGo("graphics/ammo_icon.png", "AmmoIcon"));
 
 	mouseCursor = (SpriteGo*)AddGo(new SpriteGo("graphics/crosshair.png", "CrossHair"));
 	playerHp = (SpriteGo*)AddGo(new SpriteGo());
 	playerMaxHp = (SpriteGo*)AddGo(new SpriteGo());
-
 	VertexArrayGo* background = CreateBackground(bgSize, tileSize, {50.f, 50.f}, "graphics/background_sheet.png");
 	AddGo(background);
 	//VertexArrayGo* background = (VertexArrayGo*)AddGo(new VertexArrayGo("graphics/background_sheet.png", "BackGround"));
