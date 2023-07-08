@@ -9,6 +9,8 @@ class SpriteGo;
 class TextGo;
 class Blood;
 class SpriteEffect;
+class HealPackItem;
+class AmmoItem;
 
 class SceneDev1 : public Scene
 {
@@ -16,6 +18,9 @@ protected:
 	ObjectPool<Zombie> poolZombies;
 	ObjectPool<Blood> poolBloods;
 	ObjectPool<SpriteEffect> bloodEffectPool;
+	ObjectPool<HealPackItem> healPackPool;
+	ObjectPool<AmmoItem> ammoPool;
+
 
 	Player* player;
 	//std::list<Zombie*> zombiePool;		// 비활성화 좀비
@@ -31,6 +36,13 @@ protected:
 	// UI
 	SpriteGo* mouseCursor;
 	float tick = 0.5f;
+
+	bool isFrameOn = true;
+
+	TextGo* textFrame;
+	sf::Clock clock;
+	sf::Time frameTime;
+	int frames = 0;
 
 	SpriteGo* ammoIcon;
 	TextGo* textAmmo;
@@ -98,8 +110,9 @@ public:
 	int GetCurrentAmmo() const;
 	int GetOwnedAmmo() const;
 
-	void SetCurrentAmmo(int ammo);
-	void SetOwnedAmmo(int ammo);
+	void SetReloadAmmo(const int ammo);
+	void SetCurrentAmmo(const int ammo);
+	void SetOwnedAmmo(const int ammo);
 
 	const std::list<Zombie*>* GetZombieList() const;
 };

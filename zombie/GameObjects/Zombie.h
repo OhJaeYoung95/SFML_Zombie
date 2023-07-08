@@ -57,5 +57,9 @@ public:
 	void SetPlayer(Player* player);
 
 	void OnHitBullet(int damage);
+
+	void LookAtPlayer();
+	void FollowPlayer(float dt);
+	void HitPlayer(float dt);
 };
 

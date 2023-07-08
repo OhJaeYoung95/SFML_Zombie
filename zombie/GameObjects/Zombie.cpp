@@ -51,62 +51,13 @@ void Zombie::Update(float dt)
 {
     SpriteGo::Update(dt);
 
-    //if (INPUT_MGR.GetKeyDown(sf::Keyboard::Num1))
-    //{
-    //    SetType(Types::Bloater);
-    //    Reset();
-    //}
     if (player == nullptr)
         return;
 
-    float distance = Utils::Distance(player->GetPosition(), position);
-
-    // 플레이어 바라보기
-    sf::Vector2f playerScreenPos = SCENE_MGR.GetCurrScene()->WorldPosToScreen(player->GetPosition());
-    sf::Vector2f zombieScreenPos = SCENE_MGR.GetCurrScene()->WorldPosToScreen(position);
-    //look = Utils::Normalize(playerScreenPos - zombieScreenPos);
-    look = direction = Utils::Normalize(player->GetPosition() - position);
-    sprite.setRotation(Utils::Angle(look));
-
-    // 플레이어 따라가기
-    if (distance > 25.f)
-    {
-        position += direction * speed * dt;
-        sprite.setPosition(position);
-    }
-    
-    // 데미지 입히기
-    damageTick += dt;
-    if (sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds())&& damageTick > 1.f)
-    {
-        isHit = true;
-        damageTick = 0.f;
-        player->sprite.setColor(sf::Color::Red);
-        player->HpDecrease(damage);
-    }
-
-    // 교수님코드
-    //attackTimer += dt;
-    //if (attackTimer > attackRate)
-    //{
-    //    if (player->isAlive && sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds()))
-    //    {
-    //        attackTimer = 0.f;
-    //        // 플레이어 피격
-    //        player->OnHitted(damage);
-    //    }
-    //}
-
-    if (attackTimer > attackRate)
-    {
-    }
-
-
-    if (damageTick > 1.0f && isHit)
-    {
-        isHit = false;
-        player->sprite.setColor(sf::Color::White);
-    }
+    // 좀비 행동
+    LookAtPlayer();
+    FollowPlayer(dt);
+    HitPlayer(dt);
 }
 
 void Zombie::Draw(sf::RenderWindow& window)
@@ -148,4 +99,54 @@ void Zombie::OnHitBullet(int damage)
             sceneDev1->OnDieZombie(this);
         }
     }
+}
+
+void Zombie::LookAtPlayer()
+{    // 플레이어 바라보기
+    sf::Vector2f playerScreenPos = SCENE_MGR.GetCurrScene()->WorldPosToScreen(player->GetPosition());
+    sf::Vector2f zombieScreenPos = SCENE_MGR.GetCurrScene()->WorldPosToScreen(position);
+    //look = Utils::Normalize(playerScreenPos - zombieScreenPos);
+    look = direction = Utils::Normalize(player->GetPosition() - position);
+    sprite.setRotation(Utils::Angle(look));
+
+}
+
+void Zombie::FollowPlayer(float dt)
+{
+    // 플레이어 따라가기
+    float distance = Utils::Distance(player->GetPosition(), position);
+    if (distance > 25.f)
+    {
+        position += direction * speed * dt;
+        sprite.setPosition(position);
+    }
+}
+
+void Zombie::HitPlayer(float dt)
+{
+    // 데미지 입히기
+    damageTick += dt;
+    if (sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds()) && damageTick > 1.f)
+    {
+        isHit = true;
+        damageTick = 0.f;
+        player->sprite.setColor(sf::Color::Red);
+        player->HpDecrease(damage);
+    }
+    if (damageTick > 1.0f && isHit)
+    {
+        isHit = false;
+        player->sprite.setColor(sf::Color::White);
+    }
+    // 교수님코드
+    //attackTimer += dt;
+    //if (attackTimer > attackRate)
+    //{
+    //    if (player->isAlive && sprite.getGlobalBounds().intersects(player->sprite.getGlobalBounds()))
+    //    {
+    //        attackTimer = 0.f;
+    //        // 플레이어 피격
+    //        player->OnHitted(damage);
+    //    }
+    //}
 }
