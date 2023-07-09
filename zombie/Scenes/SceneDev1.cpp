@@ -801,7 +801,8 @@ void SceneDev1::PlayingGame(float dt)
 			spawnTimer = spawnRate;
 			increaseState = true;
 		}
-		spawnTimer -= dt;
+		if(isTitle)
+			spawnTimer -= dt;
 
 		if (increaseState)
 		{
