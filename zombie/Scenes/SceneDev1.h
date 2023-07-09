@@ -25,6 +25,7 @@ protected:
 	bool onesound = true;
 	//sf::Sound playerdiesound;
 	//sf::SoundBuffer playerdiesoundbuffer;
+	VertexArrayGo* background;
 	Player* player;
 	Zombie* zombie;
 	//std::list<Zombie*> zombiePool;		// 비활성화 좀비
@@ -146,6 +147,22 @@ public:
 	// 이승우 함수 추가 SetActive게임 씬 들을설정
 	void SetActiveGameScene(bool typee);
 	void PrintState(bool type);
+
+
+	void SceneAddGo();
+	void ScenePoolSetting();
+	void SceneUISetting();
+	void SceneEnter();
+
+	void PoolClear();
+	void AllCelarPool();
+
+	void StartGame();
+	void CalTime(float dt);
+	void SetMousePos();
+	void SetPlayerHp();
+	void InputEvent();
+	void PlayingGame(float dt);
 };
 
 template<typename T>
