@@ -27,6 +27,8 @@ SceneDev1::SceneDev1() : Scene(SceneId::Dev1), player(nullptr)
 {
 	// 폰트
 	resources.push_back(std::make_tuple(ResourceTypes::Font, "fonts/zombiecontrol.ttf"));
+	resources.push_back(std::make_tuple(ResourceTypes::Font, "fonts/CookieRun Bold.ttf"));
+	resources.push_back(std::make_tuple(ResourceTypes::Font, "fonts/DNFBitBitOTF.otf"));
 
 	// 이미지
 	resources.push_back(std::make_tuple(ResourceTypes::Texture, "graphics/player.png"));
@@ -397,7 +399,9 @@ void SceneDev1::SceneAddGo()
 	playerdiesound = new SoundGo("sound/playerdie.wav");
 
 	// 타이틀 & 스탯증가
-	startText = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "StartTitle")); // 이승우 추가
+	//startText = (TextGo*)AddGo(new TextGo("fonts/CookieRun Bold.ttf", "StartTitle")); 
+	//startText = (TextGo*)AddGo(new TextGo("fonts/CookieRun Bold.ttf", "StartTitle")); 
+	startText = (TextGo*)AddGo(new TextGo("fonts/DNFBitBitOTF.otf", "StartTitle"));
 	increaseHp = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "IncreaseHp")); // ?("fonts/zombiecontrol.ttf", "IncreaseHp")
 	increaseDamage = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "IncreaseDamage"));
 	increaseBulletCount = (TextGo*)AddGo(new TextGo("fonts/zombiecontrol.ttf", "increaseBulletCount"));
@@ -416,11 +420,16 @@ void SceneDev1::SceneAddGo()
 
 void SceneDev1::ScenePoolSetting()
 {
+	auto zombieTable = DATATABLE_MGR.Get<ZombieTable>(DataTable::Ids::Zombie);
+	
 	//ObjectPool<Zombie>* ptr = &poolZombies;
 //Player* playerPtr = player;
 	player->sortLayer = 3;
-	poolZombies.OnCreate = [this](Zombie* zombie) {
-		Zombie::Types zombieType = (Zombie::Types)Utils::RandomRange(0, Zombie::TotalTypes);
+	poolZombies.OnCreate = [this, zombieTable](Zombie* zombie) {
+		ZombieInfo zombieInfo = zombieTable->Get((Zombie::Types)Utils::RandomRange(0, Zombie::TotalTypes));
+		Zombie::Types zombieType = zombieInfo.zombieType;
+
+		//Zombie::Types zombieType = (Zombie::Types)Utils::RandomRange(0, Zombie::TotalTypes);
 		//auto zombieTable = DATATABLE_MGR.Get<ZombieTable>(DataTable::Ids::Zombie);
 		//auto zombieData = zombieTable->Get(zombieType);
 		zombie->SetType(zombieType);
@@ -585,14 +594,19 @@ void SceneDev1::SceneUISetting()
 	//
 	auto stringTable = DATATABLE_MGR.Get<StringTable>(DataTable::Ids::String);
 	std::string str = stringTable->Get("TITLE");
+	sf::Font font;
+	font.loadFromFile("fonts/CookieRun Bold.ttf");
 
+	std::wstring newText = std::wstring(str.begin(), str.end());
+	sf::Text text1(newText, font, 70);
 	startText->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSize() * 0.5f));
 	startText->text.setCharacterSize(100);
 	startText->text.setOutlineThickness(5);
 	startText->text.setOutlineColor(sf::Color::Black);
-	startText->text.setString(str);
 	startText->SetOrigin(Origins::BC);
 	startText->sortLayer = 101;
+
+	//startText->textT(sf::String::fromUtf8(str.begin(), str.end()), font, 70);
 
 	startImg = (SpriteGo*)AddGo(new SpriteGo("graphics/background.png", "Title"));
 	startImg->SetOrigin(Origins::MC);

@@ -8,7 +8,7 @@ bool ZombieTable::Load()
 	filenames = "tables/ZombieTable.csv";
 
 	rapidcsv::Document doc(filenames);
-	std::vector<std::string> types = doc.GetColumn<std::string>(0);
+	std::vector<int> types = doc.GetColumn<int>(0);
 	std::vector<std::string> textureIds = doc.GetColumn<std::string>(1);
 	std::vector<float> speeds = doc.GetColumn<float>(2);
 	std::vector<int> maxHps = doc.GetColumn<int>(3);
@@ -18,7 +18,7 @@ bool ZombieTable::Load()
 	for (int i = 0; i < types.size(); i++)
 	{
 		ZombieInfo newZom;
-		newZom.zombieType = (Zombie::Types)i;
+		newZom.zombieType = (Zombie::Types)types[i];
 		newZom.textureId = textureIds[i];
 		newZom.speed = speeds[i];
 		newZom.maxHp = maxHps[i];

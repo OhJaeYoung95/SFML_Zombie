@@ -42,6 +42,7 @@ void TextGo::SetOrigin(float x, float y)
 
 void TextGo::Init()
 {
+
 }
 
 void TextGo::Release()

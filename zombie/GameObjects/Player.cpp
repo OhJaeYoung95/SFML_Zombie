@@ -310,6 +310,6 @@ void Player::Reload()
 	}
 	else
 	{
-		reloadfailed->SoundPlayer();
+		//reloadfailed->SoundPlayer();
 	}
 }
