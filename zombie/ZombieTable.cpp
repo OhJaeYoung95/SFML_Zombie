@@ -39,7 +39,8 @@ const ZombieInfo& ZombieTable::Get(Zombie::Types id)
 	auto find = table.find(id);
 	if (find == table.end())
 	{
-		return ;
+		std::cerr << "ERROR: ZombieTable Get() : ID not found" << std::endl;
+		throw std::runtime_error("Zombie not found");
 	}
 	return find->second;
 }

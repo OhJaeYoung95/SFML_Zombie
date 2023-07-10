@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "SceneDev1.h"
 #include "DataTableMgr.h"
+#include "DataTable.h"
 #include "ZombieTable.h"
 
 Zombie::Zombie(const std::string n)
@@ -62,12 +63,13 @@ void Zombie::Draw(sf::RenderWindow& window)
 
 void Zombie::SetType(Types t)
 {
-   // zombieType = t;
+    zombieType = t;
 
-    const ZombieInfo& info = DATATABLE_MGR.Get<ZombieTable>(DataTable::Ids::Zombie)->Get(t);
-   // int index = (int)zombieType;
-    zombieType = info.zombieType;
+    auto info = DATATABLE_MGR.Get<ZombieTable>(DataTable::Ids::Zombie)->Get(t);
+    //int index = (int)zombieType;
+    //zombieType = info.zombieType;
     textureId = info.textureId;
+    speed = info.speed;
     damage = info.damage;
     maxHp = info.maxHp;
     attackRate = info.attackRate;

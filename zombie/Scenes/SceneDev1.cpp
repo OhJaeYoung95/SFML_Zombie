@@ -20,6 +20,7 @@
 #include "DataTable.h"
 #include "DataTableMgr.h"
 #include "StringTable.h"
+#include "ZombieTable.h"
 
 
 SceneDev1::SceneDev1() : Scene(SceneId::Dev1), player(nullptr)
@@ -226,6 +227,7 @@ void SceneDev1::CreateZombies(int count)
 		//zombie->SetType(zombieType);
 		//zombie->SetPlayer(player);
 		//zombie->Init();
+
 		Zombie* zombie = poolZombies.Get();
 		zombie->SetActive(false);
 		//zombiePool.push_back(zombie);
@@ -418,11 +420,16 @@ void SceneDev1::ScenePoolSetting()
 //Player* playerPtr = player;
 	player->sortLayer = 3;
 	poolZombies.OnCreate = [this](Zombie* zombie) {
-
 		Zombie::Types zombieType = (Zombie::Types)Utils::RandomRange(0, Zombie::TotalTypes);
+		//auto zombieTable = DATATABLE_MGR.Get<ZombieTable>(DataTable::Ids::Zombie);
+		//auto zombieData = zombieTable->Get(zombieType);
 		zombie->SetType(zombieType);
 		zombie->SetPlayer(player);
 		zombie->sortLayer = 2;
+
+		//zombie->SetType(zombieType);
+		//zombie->SetPlayer(player);
+		//zombie->sortLayer = 2;
 		//zombie->Init();
 		//zombie->pool = ptr;
 	};
