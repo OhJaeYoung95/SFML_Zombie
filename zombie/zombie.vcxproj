@@ -120,7 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>./;./SFML-2.5.1/include;./Global;./Framework;./Scenes;./GameObjects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;./SFML-2.5.1/include;./Global;./Framework;./Scenes;./GameObjects;./DataTables;./3rd;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
@@ -153,6 +153,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DataTables\DataTable.cpp" />
+    <ClCompile Include="Framework\DataTableMgr.cpp" />
     <ClCompile Include="GameObjects\AmmoItem.cpp" />
     <ClCompile Include="GameObjects\Blood.cpp" />
     <ClCompile Include="GameObjects\Bullet.cpp" />
@@ -181,8 +183,12 @@
     <ClCompile Include="GameObjects\TextGo.cpp" />
     <ClCompile Include="GameObjects\SpriteEffect.cpp" />
     <ClCompile Include="GameObjects\SoundGo.cpp" />
+    <ClCompile Include="DataTables\StringTable.cpp" />
+    <ClCompile Include="ZombieTable.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataTables\DataTable.h" />
+    <ClInclude Include="Framework\DataTableMgr.h" />
     <ClInclude Include="GameObjects\AmmoItem.h" />
     <ClInclude Include="GameObjects\Blood.h" />
     <ClInclude Include="Framework\ObjectPool.h" />
@@ -196,6 +202,7 @@
     <ClInclude Include="GameObjects\Player.h" />
     <ClInclude Include="GameObjects\Item.h" />
     <ClInclude Include="GameObjects\HealPackItem.h" />
+    <ClInclude Include="3rd\rapidcsv.h" />
     <ClInclude Include="Scenes\Scene.h" />
     <ClInclude Include="Scenes\SceneDev1.h" />
     <ClInclude Include="Framework\SceneMgr.h" />
@@ -208,6 +215,8 @@
     <ClInclude Include="GameObjects\VertexArrayGo.h" />
     <ClInclude Include="GameObjects\Zombie.h" />
     <ClInclude Include="GameObjects\TextGo.h" />
+    <ClInclude Include="DataTables\StringTable.h" />
+    <ClInclude Include="ZombieTable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

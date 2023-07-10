@@ -1,0 +1,4 @@
+type,textureId,speed,maxHp,damage,attackRate
+Bloater,"""graphics/bloater.png""",40.f,100,10,2.f
+Chaser,"""graphics/chaser.png""",70.f,75,5,0.5f
+Crawler,"""graphics/crawler.png""",20.f,50,7,1.f

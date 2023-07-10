@@ -3,6 +3,8 @@
 #include "InputMgr.h"
 #include "SceneMgr.h"
 #include "Scene.h"
+#include "DataTableMgr.h"
+#include "ResourceMgr.h"
 
 Framework::Framework(int w, int h, const std::string& t)
     : screenWidth(w), screenHeight(h), title(t)
@@ -13,12 +15,15 @@ void Framework::Init(int width, int height, const std::string& title)
 {
 	window.create(sf::VideoMode(width, height), title);
 
+    DATATABLE_MGR.LoadAll();
+    // Àü¿ª Resource
     SCENE_MGR.Init();
 }
 
 void Framework::Release()
 {
     SCENE_MGR.Release();
+    DATATABLE_MGR.ReleaseAll();
 }
 
 void Framework::Update(float dt)

@@ -2,6 +2,9 @@
 #include "SceneMgr.h"
 #include "Scene.h"
 #include "SceneDev1.h"
+#include "DataTableMgr.h"
+#include "DataTable.h"
+#include "StringTable.h"
 
 void SceneMgr::Init()
 {
@@ -20,6 +23,9 @@ void SceneMgr::Init()
 	currentSceneId = startSceneId;
 	currentScene = scenes[(int)currentSceneId];
 	currentScene->Enter();
+
+	StringTable* stringTable = DATATABLE_MGR.Get<StringTable>(DataTable::Ids::String);
+	std::string title = stringTable->Get("TITLE");
 }
 
 void SceneMgr::Release()

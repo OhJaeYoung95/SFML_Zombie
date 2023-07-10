@@ -1,5 +1,13 @@
 #pragma once
 
+enum class Languages
+{
+	KOR,
+	ENG,
+	JP,
+	COUNT,
+};
+
 enum class Origins
 {
 	TL,

@@ -17,6 +17,10 @@
 #include "HealPackItem.h"
 #include "AmmoItem.h"
 
+#include "DataTable.h"
+#include "DataTableMgr.h"
+#include "StringTable.h"
+
 
 SceneDev1::SceneDev1() : Scene(SceneId::Dev1), player(nullptr)
 {
@@ -52,6 +56,8 @@ void SceneDev1::Init()
 {
 	Release();
 	//
+
+
 	isTitle = false;
 	play = true;
 	activeGameAll = true;
@@ -570,11 +576,14 @@ void SceneDev1::SceneUISetting()
 	//maxClampY = static_cast<float>(((bgSize.y - 1) * tileSize.y) / 2) - playerSize;
 	//minClampY = -1 * (static_cast<float>(((bgSize.y - 1) * tileSize.y) / 2)) + playerSize;
 	//
+	auto stringTable = DATATABLE_MGR.Get<StringTable>(DataTable::Ids::String);
+	std::string str = stringTable->Get("TITLE");
+
 	startText->SetPosition(sf::Vector2f(FRAMEWORK.GetWindowSize() * 0.5f));
 	startText->text.setCharacterSize(100);
 	startText->text.setOutlineThickness(5);
 	startText->text.setOutlineColor(sf::Color::Black);
-	startText->text.setString("Press return to start");
+	startText->text.setString(str);
 	startText->SetOrigin(Origins::BC);
 	startText->sortLayer = 101;
 
@@ -795,7 +804,7 @@ void SceneDev1::PlayingGame(float dt)
 	// 스폰 타이머 계산을 앞으로 하면 안된다.. ??
 	if (!isPause)
 	{
-		if (zombieCount == 0 && spawnTimer < 0)
+		if (zombieCount == 0 && spawnTimer < 0 && !increaseState)
 		{
 			wave++;
 			spawnTimer = spawnRate;
