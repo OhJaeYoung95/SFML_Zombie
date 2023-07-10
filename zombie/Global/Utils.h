@@ -34,5 +34,8 @@ public:
 
 	static float Angle(const sf::Vector2f& start, const sf::Vector2f& end);
 	static float Angle(const sf::Vector2f& dir);
+
+	static sf::Vector2f DirectionFromAngle(float angle);
+
 };
 

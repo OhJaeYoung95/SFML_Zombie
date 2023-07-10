@@ -18,10 +18,10 @@ Player::Player(const std::string textureId, const std::string n)
 void Player::Init()
 {
 	SpriteGo::Init();
-	
+
 	increaseDamage = false;
-	bulletCount = 1;
-	
+	bulletCount = 25;
+
 	SetOrigin(Origins::MC);
 
 	ObjectPool<Bullet>* ptr = &poolBullets;
@@ -56,7 +56,7 @@ void Player::Reset()
 	sprite.setColor(sf::Color::White);
 	isAlive = true;
 	hp = maxHp;
-
+	
 	for (auto bullet : poolBullets.GetUseList())
 	{
 		SCENE_MGR.GetCurrScene()->RemoveGo(bullet);
@@ -240,8 +240,16 @@ void Player::Shoot()
 				increaseDamage = false;
 			}
 			bullet->SetDamage(bulletDamage);
-			sf::Vector2f pos = look + sf::Vector2f{ 0.1f * count, 0.1f * count };
-			bullet->Fire(GetPosition(), look + sf::Vector2f{ 0.1f * count, 0.1f * count }, 1000.f);
+
+		
+				float modifiedAngle = Utils::Angle(look);  // 기존 각도 계산
+				//float additionalAngle = (count % 2 == 1) ? 15.f * count : -15.f * count;  // 추가 각도 계산
+				float additionalAngle =  -15 + (30 / bulletCount * count); //(count == 0) ? 0.f : ((count % 2 == 1) ? 15.f * count : -15.f * count);
+				//float additionalAngle =  (360 / bulletCount * count);
+				float finalAngle = modifiedAngle + additionalAngle;  // 기존 각도와 추가 각도 합산
+				sf::Vector2f fireDirection = Utils::DirectionFromAngle(finalAngle);  // 총알 발사 각도 계산
+
+				bullet->Fire(GetPosition(), fireDirection, 1000.f);
 			if (sceneDev1 != nullptr)
 			{
 				bullet->SetZombieList(sceneDev1->GetZombieList());
@@ -251,7 +259,11 @@ void Player::Shoot()
 		}
 		sceneDev1->SetCurrentAmmo(-1);
 	}
-
+	if (INPUT_MGR.GetKeyDown(sf::Keyboard::Space))
+	{
+		std::cout << " X : " << look.x << std::endl;
+		std::cout << " Y : " << look.y << std::endl;
+	}
 }
 
 void Player::Reload()

@@ -92,7 +92,7 @@ float Utils::Lerp(float a, float b, float t, bool clamping)
 	float v = a + (b - a) * t;
 	if (clamping)
 	{
-		v = Utils::Clamp(v, std::min(a,b), std::max(a,b));
+		v = Utils::Clamp(v, std::min(a, b), std::max(a, b));
 	}
 	return v;
 }
@@ -151,4 +151,10 @@ float Utils::Angle(const sf::Vector2f& start, const sf::Vector2f& end)
 float Utils::Angle(const sf::Vector2f& dir)
 {
 	return atan2(dir.y, dir.x) * (180.f / M_PI);
+}
+
+sf::Vector2f Utils::DirectionFromAngle(float angle)
+{
+	float radians = angle * (M_PI / 180.f);
+	return sf::Vector2f(std::cos(radians), std::sin(radians));
 }

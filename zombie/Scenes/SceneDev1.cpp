@@ -650,7 +650,7 @@ void SceneDev1::SceneEnter()
 	worldView.setCenter(0.f, 0.f);
 	player->SetPosition(0.f, 0.f);
 	//
-	player->ResetBulletCount();
+	//player->ResetBulletCount();
 	//
 
 	isGameOver = false;
@@ -795,7 +795,7 @@ void SceneDev1::PlayingGame(float dt)
 	// 스폰 타이머 계산을 앞으로 하면 안된다.. ??
 	if (!isPause)
 	{
-		if (zombieCount == 0 && spawnTimer < 0)
+		if (zombieCount == 0 && spawnTimer < 0 && !increaseState)
 		{
 			wave++;
 			spawnTimer = spawnRate;
@@ -835,23 +835,6 @@ void SceneDev1::PlayingGame(float dt)
 		if (zombieCount == 0 && spawnTimer < 0)
 		{
 			SpawnZombies(wave * 10, player->GetPosition(), 500.f);
-
-			/*		switch (wave)
-					{
-					case 1:
-						if(spawnTimer < 0)
-							SpawnZombies(wave * 10, player->GetPosition(), 500.f);
-						break;
-					case 2:
-						if (spawnTimer < 0)
-							SpawnZombies(wave * 10, player->GetPosition(), 500.f);
-						break;
-					case 3:
-						if (spawnTimer < 0)
-							SpawnZombies(wave * 10, player->GetPosition(), 500.f);
-						break;
-					}
-			*/
 		}
 
 		// UI
