@@ -296,4 +296,8 @@ void Player::Reload()
 			}
 		}
 	}
+	else
+	{
+		reloadfailed->SoundPlayer();
+	}
 }
